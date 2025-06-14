@@ -1,0 +1,3 @@
+[submodule "external/test-VSCode-external-base"]
+	path = external/test-VSCode-external-base
+	url = https://github.com/semanticart/minimum-viable-vscode-language-server-extension.git
