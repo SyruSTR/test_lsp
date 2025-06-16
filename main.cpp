@@ -7,8 +7,9 @@
 #include <csignal>
 #include <unistd.h>
 #include <fstream>
-#include "external/json.hpp"
+// #include "external/json.hpp"
 #include "Logger/Logger.h"
+#include "Messages/TextDocument/Completion.h"
 using json = nlohmann::json;
 
 
@@ -18,6 +19,8 @@ void waitForDebugger() {
 
 void sendResponse(const json& response) {
     std::cout << "Content-Length: " << response.dump().length() << "\r\n\r\n" << response.dump();
+    //debug message
+    std::cerr << response.dump() << std::endl;
     std::cout.flush();
 }
 
@@ -40,21 +43,57 @@ int main() {
 
 
                 auto message = json::parse(body);
-                logger.log(message["id"].dump(),LogLevel::INFO);
-                logger.log(message["method"].dump(),LogLevel::INFO);
+                logger.log(message.dump(),LogLevel::WARNING);
+                logger.log(message["id"].dump(),LogLevel::CLIENT);
+                logger.log(message["method"].dump(),LogLevel::CLIENT);
+
+                std::cerr << "Got message!" << std::endl;
+                // logger.log(message["method"].get<std::string>(),LogLevel::WARNING);
+                std::string method = message["method"].get<std::string>();
+                if (method == "initialize") {
+                    int id = message["id"].get<int>();
+                    // example responce 'init'
+                    // json response = R"({
+                    //     "jsonrpc": "2.0",
+                    //     "id": 1,
+                    //     "serverInfo": {
+                    //         "name": "my-lsp-server",
+                    //         "version": "0.0.1",
+                    //     },
+                    // })"_json;
+                    json response = {
+                        {"jsonrpc","2.0"},
+                        {"id",id},
+                        {"serverInfo",{
+                            {"name","my-lsp-server"},
+                            {"version", "0.0.1"},
+                        }}
+                    };
+                    response["result"]["capabilities"]["completionProvider"] = json::object();
+                    logger.log(response.dump(),LogLevel::SERVER);
+                    sendResponse(response);
+                }
+                // else if (method == "textDocument/completion") {
+                //     int id = message["id"].get<int>();
+                //     json response = {
+                //         {"jsonrpc","2.0"},
+                //         {"id",id},
+                //         {"serverInfo",{
+                //                 {"name","my-lsp-server"},
+                //                 {"version", "0.0.1"},
+                //             }}
+                //     };
+                //     response["result"]["capabilities"]["completionProvider"] = json::object();
+                //     CompletionList completion;
+                //     // response["result"]["CompletionList"] = completion.test_CompletionList();
+                //     logger.log(response.dump(),LogLevel::SERVER);
+                //     sendResponse(response);
+                // }
 
                 // TODO: Parse JSON and respond accordingly
                 // std::cerr << "Received: " << body << std::endl;
 
-                // example responce 'init'
-                json response = R"({
-                    "jsonrpc": "2.0",
-                    "id": 1,
-                    "result": {
-                        "capabilities": {}
-                    }
-                })";
-                sendResponse(response);
+
 
                 contentLength = 0;
             }

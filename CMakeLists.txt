@@ -10,6 +10,7 @@ set(SOURCE_FILES
         external/json.hpp
         Logger/Logger.cpp
         Logger/Logger.h
+        Messages/TextDocument/Completion.h
 )
 
 add_executable(my-lsp-server ${SOURCE_FILES})

@@ -46,6 +46,8 @@ std::string Logger::getLevelString(LogLevel level) {
         case LogLevel::INFO: return "INFO";
         case LogLevel::WARNING: return "WARNING";
         case LogLevel::ERROR: return "ERROR";
+        case LogLevel::CLIENT: return "CLIENT";
+        case LogLevel::SERVER: return "SERVER";
         default: return "UNKNOWN";
     }
 }

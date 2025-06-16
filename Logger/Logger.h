@@ -11,6 +11,8 @@
 #include <iomanip>
 
 enum class LogLevel {
+    CLIENT,
+    SERVER,
     INFO,
     WARNING,
     ERROR
