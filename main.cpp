@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <fstream>
 #include "external/json.hpp"
+#include "Logger/Logger.h"
 using json = nlohmann::json;
 
 
@@ -21,13 +22,14 @@ void sendResponse(const json& response) {
 }
 
 int main() {
-
     waitForDebugger();
+    Logger logger("/tmp/lsp-log.txt");
+
     std::string header;
     std::string line;
     int contentLength = 0;
 
-    std::cerr << "LSP start! GGWP!" << std::endl;
+    // std::cerr << "LSP start! GGWP!" << std::endl;
 
     while (std::getline(std::cin, line)) {
         if (line == "\r" || line.empty()) {
@@ -35,8 +37,14 @@ int main() {
                 std::string body(contentLength, '\0');
                 std::cin.read(&body[0], contentLength);
 
+
+
+                auto message = json::parse(body);
+                logger.log(message["id"].dump(),LogLevel::INFO);
+                logger.log(message["method"].dump(),LogLevel::INFO);
+
                 // TODO: Parse JSON and respond accordingly
-                std::cerr << "Received: " << body << std::endl;
+                // std::cerr << "Received: " << body << std::endl;
 
                 // example responce 'init'
                 json response = R"({
