@@ -10,6 +10,8 @@
 // #include "external/json.hpp"
 #include "Logger/Logger.h"
 #include "Messages/TextDocument/Completion.h"
+#include "Messages/methods/initialize.h"
+#include "Messages/ResponseMessage.h"
 using json = nlohmann::json;
 
 
@@ -49,27 +51,11 @@ int main() {
 
                 std::cerr << "Got message!" << std::endl;
                 // logger.log(message["method"].get<std::string>(),LogLevel::WARNING);
-                std::string method = message["method"].get<std::string>();
+                auto method = message["method"].get<std::string>();
                 if (method == "initialize") {
                     int id = message["id"].get<int>();
-                    // example responce 'init'
-                    // json response = R"({
-                    //     "jsonrpc": "2.0",
-                    //     "id": 1,
-                    //     "serverInfo": {
-                    //         "name": "my-lsp-server",
-                    //         "version": "0.0.1",
-                    //     },
-                    // })"_json;
-                    json response = {
-                        {"jsonrpc","2.0"},
-                        {"id",id},
-                        {"serverInfo",{
-                            {"name","my-lsp-server"},
-                            {"version", "0.0.1"},
-                        }}
-                    };
-                    response["result"]["capabilities"]["completionProvider"] = json::object();
+                    auto msg = lsp_test::ResponseMessage(id);
+                    json response = lsp_test::initialize_responce(msg);
                     logger.log(response.dump(),LogLevel::SERVER);
                     sendResponse(response);
                 }

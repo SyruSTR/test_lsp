@@ -9,6 +9,8 @@
 struct ServerInfo {
     std::string name;
     std::optional<std::string> version;
+
+    ServerInfo(std::string name, std::optional<std::string> version) : name(name), version(version) {}
 };
 
 #endif //SERVERINFO_H

@@ -6,15 +6,27 @@
 #define RESPONSEMESSAGE_H
 
 #include "Message.h"
+namespace lsp_test {
 
-struct ResponseMessage : Message {
-    int64_t id;
-    json result;
+    using json = nlohmann::json;
 
-    ResponseMessage(const std::string &jsonrpc, int64_t id) : Message(jsonrpc), id(id) {}
-    ResponseMessage(const int64_t id) : id(id) {
-        this->jsonrpc = Message().jsonrpc;
-    }
-};
+    struct ResponseMessage : Message {
+        int64_t id;
+        json result;
+
+        ResponseMessage(const std::string &jsonrpc, int64_t id) : Message(jsonrpc), id(id) {}
+        ResponseMessage(const int64_t id) : id(id) {
+            this->jsonrpc = Message().jsonrpc;
+        }
+
+        void to_json(json &j, const ResponseMessage &msg) {
+            j = json{
+                {"jsonrpc",msg.jsonrpc},
+                {"id",msg.id},
+                {"result",result}
+            };
+        }
+    };
+}
 
 #endif //RESPONSEMESSAGE_H
