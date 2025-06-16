@@ -6,14 +6,17 @@
 #include <regex>
 #include <csignal>
 #include <unistd.h>
+#include <fstream>
+#include "external/json.hpp"
+using json = nlohmann::json;
 
 
 void waitForDebugger() {
     raise(SIGSTOP);
 }
 
-void sendResponse(const std::string& response) {
-    std::cout << "Content-Length: " << response.length() << "\r\n\r\n" << response;
+void sendResponse(const json& response) {
+    std::cout << "Content-Length: " << response.dump().length() << "\r\n\r\n" << response.dump();
     std::cout.flush();
 }
 
@@ -36,7 +39,7 @@ int main() {
                 std::cerr << "Received: " << body << std::endl;
 
                 // example responce 'init'
-                std::string response = R"({
+                json response = R"({
                     "jsonrpc": "2.0",
                     "id": 1,
                     "result": {
