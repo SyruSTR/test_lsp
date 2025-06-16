@@ -6,23 +6,26 @@
 #define MESSAGE_H
 #include <string>
 #include "../external/json.hpp"
-using json = nlohmann::json;
 
-struct Message {
-    std::string jsonrpc;
+namespace lsp_test {
+    using json = nlohmann::json;
 
-    Message(const std::string &jsonrpc) : jsonrpc(jsonrpc) {}
-    Message() {
-        this->jsonrpc = "2.0";
-    }
+    struct Message {
+        std::string jsonrpc;
 
-    void to_json(json &j, const Message &msg) {
-        j = json({"jsonrpc",msg.jsonrpc});
-    }
+        Message(const std::string &jsonrpc) : jsonrpc(jsonrpc) {}
+        Message() {
+            this->jsonrpc = "2.0";
+        }
 
-    void from_json(const json &j, Message &msg) {
-        j.at("jsonrpc").get_to(msg.jsonrpc);
-    }
-};
+        void to_json(json &j, const Message &msg) {
+            j = json({"jsonrpc",msg.jsonrpc});
+        }
+
+        void from_json(const json &j, Message &msg) {
+            j.at("jsonrpc").get_to(msg.jsonrpc);
+        }
+    };
+}
 
 #endif //MESSAGE_H

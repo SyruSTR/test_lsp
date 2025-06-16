@@ -7,32 +7,44 @@
 #include <string>
 #include <vector>
 
+#include "../ResponseMessage.h"
 #include "../../external/json.hpp"
 
-struct CompletionItem {
-    std::string label;
+namespace lsp_test {
 
-    CompletionItem(const std::string &label_) : label(label_) {}
-};
+    using json = nlohmann::json;
 
-struct CompletionList {
-    bool isIncomplete;
-    std::vector<CompletionItem> items;
+    struct CompletionItem {
+        std::string label;
 
-    nlohmann::json test_CompletionList() {
-        nlohmann::json result;
-        result["isIncomplete"] = false;
+        CompletionItem(const std::string &label_) : label(label_) {}
+    };
 
-        items.emplace_back("TypeScript");
-        items.emplace_back("LSP");
-        items.emplace_back("Lua");
-        for (const auto &item : items) {
-            result["items"].push_back(item.label);
-        }
-        // result["items"] = nlohmann::json::parse(items.begin(),items.end());
-
-        return result;
+    void to_json(json &j, const CompletionItem &ci) {
+        j = {{"label", ci.label}};
     }
-};
+
+    struct CompletionList {
+        bool isIncomplete;
+        std::vector<CompletionItem> items;
+
+        CompletionList() : isIncomplete(false) {
+            items.clear();
+        }
+    };
+
+    json completion(const ResponseMessage& msg, CompletionList& ComList) {
+        json response = msg;
+        ComList.items.emplace_back("TypeScript");
+        ComList.items.emplace_back("LSP");
+        ComList.items.emplace_back("Lua");
+        response["result"].push_back({"items",ComList.items});
+        // for (const auto &item : ComList.items) {
+        //     response["result"]["items"].push_back(item.label);
+        // }
+        return response;
+    }
+}
+
 
 #endif //COMPLETION_H

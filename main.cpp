@@ -45,8 +45,8 @@ int main() {
 
 
                 auto message = json::parse(body);
-                logger.log(message.dump(),LogLevel::WARNING);
-                logger.log(message["id"].dump(),LogLevel::CLIENT);
+                logger.log(message.dump(),LogLevel::CLIENT);
+                // logger.log(message["id"].dump(),LogLevel::CLIENT);
                 logger.log(message["method"].dump(),LogLevel::CLIENT);
 
                 std::cerr << "Got message!" << std::endl;
@@ -55,26 +55,20 @@ int main() {
                 if (method == "initialize") {
                     int id = message["id"].get<int>();
                     auto msg = lsp_test::ResponseMessage(id);
+
                     json response = lsp_test::initialize_responce(msg);
                     logger.log(response.dump(),LogLevel::SERVER);
                     sendResponse(response);
                 }
-                // else if (method == "textDocument/completion") {
-                //     int id = message["id"].get<int>();
-                //     json response = {
-                //         {"jsonrpc","2.0"},
-                //         {"id",id},
-                //         {"serverInfo",{
-                //                 {"name","my-lsp-server"},
-                //                 {"version", "0.0.1"},
-                //             }}
-                //     };
-                //     response["result"]["capabilities"]["completionProvider"] = json::object();
-                //     CompletionList completion;
-                //     // response["result"]["CompletionList"] = completion.test_CompletionList();
-                //     logger.log(response.dump(),LogLevel::SERVER);
-                //     sendResponse(response);
-                // }
+                else if (method == "textDocument/completion") {
+                    int id = message["id"].get<int>();
+                    auto msg = lsp_test::ResponseMessage(id);
+                    lsp_test::CompletionList completion;
+                    completion.isIncomplete = false;
+                    json response = lsp_test::completion(msg, completion);
+                    logger.log(response.dump(),LogLevel::SERVER);
+                    sendResponse(response);
+                }
 
                 // TODO: Parse JSON and respond accordingly
                 // std::cerr << "Received: " << body << std::endl;

@@ -12,7 +12,7 @@
 
 template <typename T>
 struct InitializeResult {
-    std::optional<ServerInfo> serverInfo;
+    std::optional<lsp_test::ServerInfo> serverInfo;
     std::map<std::string, T> Capabilities;
 
 };
