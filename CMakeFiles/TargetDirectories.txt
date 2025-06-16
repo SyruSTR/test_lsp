@@ -1,0 +1,3 @@
+/home/grusted/CLionProjects/-test_lsp/CMakeFiles/my-lsp-server.dir
+/home/grusted/CLionProjects/-test_lsp/CMakeFiles/edit_cache.dir
+/home/grusted/CLionProjects/-test_lsp/CMakeFiles/rebuild_cache.dir
