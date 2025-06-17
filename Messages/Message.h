@@ -17,15 +17,15 @@ namespace lsp_test {
         Message() {
             this->jsonrpc = "2.0";
         }
-
-        void to_json(json &j, const Message &msg) {
-            j = json({"jsonrpc",msg.jsonrpc});
-        }
-
-        void from_json(const json &j, Message &msg) {
-            j.at("jsonrpc").get_to(msg.jsonrpc);
-        }
     };
+
+    void to_json(json &j, const Message &msg) {
+        j = json({"jsonrpc",msg.jsonrpc});
+    }
+
+    void from_json(const json &j, Message &msg) {
+        j.at("jsonrpc").get_to(msg.jsonrpc);
+    }
 }
 
 #endif //MESSAGE_H

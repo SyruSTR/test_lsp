@@ -8,6 +8,7 @@
 #include "../RequestMessage.h"
 #include "../ResponseMessage.h"
 #include "../../external/json.hpp"
+#include "../TextDocument/TextDocumentSync.h"
 
 namespace lsp_test {
 
@@ -17,6 +18,9 @@ namespace lsp_test {
         json response = msg;
         ServerInfo server_info {"my-lsp-server","0.0.1"};
         response["result"]["capabilities"]["completionProvider"] = json::object();
+        // response["result"]["capabilities"].push_back({"completionProvider",json::object()});
+        response["result"]["capabilities"]["textDocumentSync"] = FULL;
+        // response["result"]["capabilities"].push_back({"textDocumentSync",FULL});
         return response;
     }
 }

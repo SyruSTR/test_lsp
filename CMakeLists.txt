@@ -14,11 +14,13 @@ set(SOURCE_FILES
 
         Messages/TextDocument/Completion.h
         Messages/methods/initialize.h
-        Messages/methods/InitializeResult.h
         Messages/methods/ServerInfo.h
         Messages/Message.h
         Messages/ResponseMessage.h
         Messages/RequestMessage.h
+        Messages/TextDocument/TextDocumentSync.h
+        Messages/TextDocument/DidChange.h
+        Messages/NotificationMessage.h
 )
 
 add_executable(my-lsp-server ${SOURCE_FILES})

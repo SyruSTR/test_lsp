@@ -7,46 +7,34 @@
 
 #include <optional>
 #include "Message.h"
+#include "NotificationMessage.h"
+
 namespace lsp_test {
     template <typename T>
-struct RequestMessage:Message {
+struct RequestMessage : NotificationMessage<T> {
 
         int64_t id;
-        std::string method;
-        std::optional<T> params; //something else
-
-        RequestMessage(
-            uint64_t id,
-            std::string method,
-            std::optional<T> params,
-            std::string jsonrpc) :
-        Message(jsonrpc), id(id), method(method), params(params) {}
-
-        RequestMessage(
-            uint64_t id,
-            std::string method,
-            std::string jsonrpc) :
-        Message(jsonrpc), id(id), method(method), params(params) {
-            this.params = std::nullopt;
-        }
-
-        RequestMessage(
-            uint64_t id,
-            std::string method) :
-        id(id), method(method), params(params) {
-            this->jsonrpc = Message();
-            this.params = std::nullopt;
-        }
 
         RequestMessage(
             uint64_t id,
             std::string method,
             std::optional<T> params) :
-        id(id), method(method), params(params) {
+        NotificationMessage<T>(method,params), id(id) {}
+
+        RequestMessage(
+            uint64_t id,
+            std::string method) :
+        NotificationMessage<T>(method, std::nullopt), id(id) {
             this->jsonrpc = Message();
         }
 
     };
+
+    template <typename T>
+    void from_json(const json &j, RequestMessage<T> &msg) {
+        msg = j.get<NotificationMessage<T>>();
+        j.at("id").get_to(msg.id);
+    }
 }
 
 #endif //REQUESTMESSAGE_H
