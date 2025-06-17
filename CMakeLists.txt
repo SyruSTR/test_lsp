@@ -21,6 +21,7 @@ set(SOURCE_FILES
         Messages/TextDocument/TextDocumentSync.h
         Messages/TextDocument/DidChange.h
         Messages/NotificationMessage.h
+        Messages/TextDocument/DidChangeTextParams.h
 )
 
 add_executable(my-lsp-server ${SOURCE_FILES})

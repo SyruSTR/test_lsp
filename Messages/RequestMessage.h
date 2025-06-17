@@ -10,29 +10,25 @@
 #include "NotificationMessage.h"
 
 namespace lsp_test {
-    template <typename T>
-struct RequestMessage : NotificationMessage<T> {
+struct RequestMessage : NotificationMessage {
 
         int64_t id;
 
         RequestMessage(
             uint64_t id,
             std::string method,
-            std::optional<T> params) :
-        NotificationMessage<T>(method,params), id(id) {}
+            std::optional<DidChangeTextDocumentParams> params) :
+        NotificationMessage(method,params), id(id) {}
 
         RequestMessage(
             uint64_t id,
             std::string method) :
-        NotificationMessage<T>(method, std::nullopt), id(id) {
-            this->jsonrpc = Message();
-        }
+        NotificationMessage(method, std::nullopt), id(id) {}
 
     };
 
-    template <typename T>
-    void from_json(const json &j, RequestMessage<T> &msg) {
-        msg = j.get<NotificationMessage<T>>();
+    void from_json(const json &j, RequestMessage &msg) {
+        from_json(j,static_cast<NotificationMessage &>(msg));
         j.at("id").get_to(msg.id);
     }
 }

@@ -6,28 +6,16 @@
 #define DIDCHANGE_H
 #include <string>
 #include <vector>
+#include "../NotificationMessage.h"
 
 namespace lsp_test {
 
-    struct TextDocumentIdentifier {
-        std::string documentUri;
-    };
+    using json = nlohmann::json;
 
-    struct VersionedTextDocumentIdentifier : TextDocumentIdentifier {
-        int64_t version;
-    };
-
-    struct TextDocumentContentChangeEvent {
-        std::string text;
-    };
-
-    struct DidChangeTextDocumentParams {
-        VersionedTextDocumentIdentifier textDocument;
-        std::vector<TextDocumentContentChangeEvent> contentChange;
-    };
-
-    json DidChange() {
-
+    json DidChange(const NotificationMessage &msg) {
+        json j;
+        to_json(j,msg);
+        return j;
     }
 }
 

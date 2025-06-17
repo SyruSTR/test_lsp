@@ -12,6 +12,7 @@
 #include "Messages/TextDocument/Completion.h"
 #include "Messages/methods/initialize.h"
 #include "Messages/ResponseMessage.h"
+#include "Messages/TextDocument/DidChange.h"
 using json = nlohmann::json;
 
 
@@ -49,6 +50,7 @@ int main() {
                 // logger.log(message["id"].dump(),LogLevel::CLIENT);
                 logger.log(message["method"].dump(),LogLevel::CLIENT);
 
+
                 std::cerr << "Got message!" << std::endl;
                 // logger.log(message["method"].get<std::string>(),LogLevel::WARNING);
                 auto method = message["method"].get<std::string>();
@@ -68,6 +70,12 @@ int main() {
                     json response = lsp_test::completion(msg, completion);
                     logger.log(response.dump(),LogLevel::SERVER);
                     sendResponse(response);
+                }
+                else if (method == "textDocument/didChange") {
+                    lsp_test::DidChangeTextDocumentParams params = message["params"];
+                    auto notification = lsp_test::NotificationMessage(method,params);
+                    json request = lsp_test::DidChange(notification);
+                    logger.log(request.dump(),LogLevel::CLIENT);
                 }
 
                 // TODO: Parse JSON and respond accordingly
