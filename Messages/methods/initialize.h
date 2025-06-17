@@ -6,7 +6,6 @@
 #define INITIALIZE_H
 
 #include "../RequestMessage.h"
-#include "InitializeResult.h"
 #include "../ResponseMessage.h"
 #include "../../external/json.hpp"
 
@@ -17,10 +16,6 @@ namespace lsp_test {
     json initialize_responce(const ResponseMessage &msg) {
         json response = msg;
         ServerInfo server_info {"my-lsp-server","0.0.1"};
-        // response["result"]["serverInfo"] = {
-        // {"name",server_info.name},
-        // {"version",server_info.version},
-        // };
         response["result"]["capabilities"]["completionProvider"] = json::object();
         return response;
     }
