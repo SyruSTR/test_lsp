@@ -20,7 +20,7 @@ namespace lsp_test {
     };
 
     void to_json(json &j, const Message &msg) {
-        j = json({"jsonrpc",msg.jsonrpc});
+        j["jsonrpc"] = msg.jsonrpc;
     }
 
     void from_json(const json &j, Message &msg) {
