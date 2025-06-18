@@ -31,10 +31,9 @@ namespace lsp_test {
         }
     };
 
-    void to_json(json& j, CompletionList& cl) {
-        cl.isIncomplete = cl.items.capacity() == MAX_LENGTH;
+    void to_json(json& j, const CompletionList& cl) {
         j = {
-            {"isIncomplete", cl.isIncomplete},
+            {"isIncomplete", cl.items.capacity() == MAX_LENGTH},
             {"items", cl.items}
         };
     }
