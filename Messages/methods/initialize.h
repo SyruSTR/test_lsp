@@ -14,12 +14,12 @@ namespace lsp_test {
 
     using json = nlohmann::json;
 
-    json initialize_responce(const ResponseMessage &msg) {
+    template<typename T, std::enable_if_t<std::is_base_of_v<ResponseResult, T>, bool> = true>
+    json initialize_response(const ResponseMessage<T> &msg) {
         json response = msg;
-        ServerInfo server_info {"my-lsp-server","0.0.1"};
-        response["result"]["capabilities"]["completionProvider"] = json::object();
+        // response["result"]["capabilities"]["completionProvider"] = json::object();
         // response["result"]["capabilities"].push_back({"completionProvider",json::object()});
-        response["result"]["capabilities"]["textDocumentSync"] = FULL;
+        // response["result"]["capabilities"]["textDocumentSync"] = FULL;
         // response["result"]["capabilities"].push_back({"textDocumentSync",FULL});
         return response;
     }

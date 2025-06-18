@@ -6,27 +6,50 @@
 #define RESPONSEMESSAGE_H
 
 #include "Message.h"
+#include "methods/InitializeResult.h"
 #include "methods/ServerInfo.h"
 
 namespace lsp_test {
 
     using json = nlohmann::json;
 
+    template<typename T, std::enable_if_t<std::is_base_of_v<ResponseResult, T>, bool> = true>
     struct ResponseMessage : Message {
         int64_t id;
-        json result;
+        T result;
 
-        ResponseMessage(const std::string &jsonrpc, int64_t id) : Message(jsonrpc), id(id) {
-            result["result"].push_back({"serverInfo",ServerInfo()});
-        }
-        ResponseMessage(const int64_t id) : id(id) {
-            auto info = ServerInfo();
-            result["result"].push_back({"serverInfo",ServerInfo()});
+        ResponseMessage(const std::string &jsonrpc, const int64_t id, const T result) :
+        Message(jsonrpc),
+        id(id),
+        result(result){}
+            // ServerInfo{},
+            // [] {
+            //     //TODO json -> ServerCapabilities
+            //      json serverCapabilities;
+            //      serverCapabilities["capabilities"]["completionProvider"] = json::object();
+            //      serverCapabilities["capabilities"]["textDocumentSync"] = FULL;
+            //      return serverCapabilities;
+            // }()){}
+
+        ResponseMessage(const int64_t id, const T result) :
+        id(id),
+        result(result)
+        //     ServerInfo{},
+        //     [] {
+        //         //TODO json -> ServerCapabilities
+        //         json serverCapabilities;
+        //         serverCapabilities["capabilities"]["completionProvider"] = json::object();
+        //         serverCapabilities["capabilities"]["textDocumentSync"] = FULL;
+        //         return serverCapabilities;
+        //     }()
+        // )
+        {
             this->jsonrpc = Message().jsonrpc;
         }
     };
 
-    void to_json(json &j, const ResponseMessage &msg) {
+    template<typename T, std::enable_if_t<std::is_base_of_v<ResponseResult, T>, bool> = true>
+    void to_json(json &j, const ResponseMessage<T> &msg) {
         j = json{
                 {"jsonrpc", msg.jsonrpc},
                 {"id", msg.id},

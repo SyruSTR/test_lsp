@@ -22,6 +22,13 @@ set(SOURCE_FILES
         Messages/TextDocument/DidChange.h
         Messages/NotificationMessage.h
         Messages/TextDocument/DidChangeTextParams.h
+        Documents.h
+        Messages/TextDocument/CompletionParams.h
+        Messages/TextDocument/Params.h
+        Messages/methods/InitializeResult.h
+        Messages/ResponceResult.h
+        Messages/TextDocument/CompletionResult.h
+        Messages/TextDocument/CompletionList.h
 )
 
 add_executable(my-lsp-server ${SOURCE_FILES})

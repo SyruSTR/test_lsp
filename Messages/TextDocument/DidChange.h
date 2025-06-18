@@ -12,7 +12,8 @@ namespace lsp_test {
 
     using json = nlohmann::json;
 
-    json DidChange(const NotificationMessage &msg) {
+    template<typename T, std::enable_if_t<std::is_base_of_v<Params, T>, bool> = true>
+    json DidChange(const NotificationMessage<T> &msg) {
         json j;
         to_json(j,msg);
         return j;

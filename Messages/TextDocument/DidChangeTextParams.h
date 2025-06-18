@@ -4,6 +4,7 @@
 
 #ifndef DIDCHANGETEXTPARAMS_H
 #define DIDCHANGETEXTPARAMS_H
+#include "Params.h"
 #include "../../external/json.hpp"
 
 namespace lsp_test {
@@ -12,7 +13,13 @@ namespace lsp_test {
 
     struct TextDocumentIdentifier {
         std::string uri;
+
+        bool operator<(const TextDocumentIdentifier& id) const {
+            return uri < id.uri;
+        }
     };
+
+
 
     void to_json(json &j, const TextDocumentIdentifier &id) {
         j["uri"] = id.uri;
@@ -48,7 +55,7 @@ namespace lsp_test {
         j.at("text").get_to(event.text);
     }
 
-    struct DidChangeTextDocumentParams {
+    struct DidChangeTextDocumentParams : Params {
         VersionedTextDocumentIdentifier textDocument;
         std::vector<TextDocumentContentChangeEvent> contentChange;
     };

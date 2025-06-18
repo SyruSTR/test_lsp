@@ -8,19 +8,23 @@
 
 #include "Message.h"
 #include "TextDocument/DidChangeTextParams.h"
+#include "TextDocument/Params.h"
+
 
 namespace lsp_test {
 
-    using json = nlohmann::json;
 
+
+    using json = nlohmann::json;
+    template<typename T, std::enable_if_t<std::is_base_of_v<Params, T>, bool> = true>
     struct NotificationMessage : Message {
         std::string method;
-        std::optional<DidChangeTextDocumentParams> params; //something else
+        std::optional<T> params; //something else
 
         NotificationMessage() {}
         NotificationMessage(
             const std::string &method,
-            const std::optional<DidChangeTextDocumentParams> &params) :
+            const std::optional<T> &params) :
         method(method), params(params) {}
     };
 
@@ -34,14 +38,16 @@ namespace lsp_test {
     //     }
     // }
 
-    void to_json(json &j, const NotificationMessage &msg) {
+    template<typename T, std::enable_if_t<std::is_base_of_v<Params, T>, bool> = true>
+    void to_json(json &j, const NotificationMessage<T> &msg) {
         to_json(j,static_cast<Message>(msg));
         j.push_back({"method",msg.method});
         // j["method"] = msg.method;
         j.push_back({"params",msg.params});
     }
 
-    void from_json(const json& j, NotificationMessage &msg) {
+    template<typename T, std::enable_if_t<std::is_base_of_v<Params, T>, bool> = true>
+    void from_json(const json& j, NotificationMessage<T> &msg) {
         from_json(j, static_cast<Message&>(msg));
 
         j.at("method").get_to(msg.method);
@@ -49,7 +55,7 @@ namespace lsp_test {
             // std::variant<std::vector<std::string>, std::string> tmp;
             // from_json(j.at("params"), tmp);
             // msg.params = std::move(tmp);
-            msg.params = j.at("params").get<DidChangeTextDocumentParams>();
+            msg.params = j.at("params").get<T>();
         }
         else
             msg.params = std::nullopt;

@@ -13,6 +13,8 @@
 #include "Messages/methods/initialize.h"
 #include "Messages/ResponseMessage.h"
 #include "Messages/TextDocument/DidChange.h"
+#include "Documents.h"
+#include "Messages/TextDocument/CompletionParams.h"
 using json = nlohmann::json;
 
 
@@ -35,6 +37,8 @@ int main() {
     std::string line;
     int contentLength = 0;
 
+    lsp_test::Documents documents;
+
     // std::cerr << "LSP start! GGWP!" << std::endl;
 
     while (std::getline(std::cin, line)) {
@@ -56,27 +60,47 @@ int main() {
                 auto method = message["method"].get<std::string>();
                 if (method == "initialize") {
                     int id = message["id"].get<int>();
-                    auto msg = lsp_test::ResponseMessage(id);
+                    // ServerInfo server_info {"my-lsp-server","0.0.1"};
+                    lsp_test::InitializerResult result = lsp_test::InitializerResult(lsp_test::ServerInfo(),
+                    [] {
+                             //TODO json -> ServerCapabilities
+                             json serverCapabilities;
+                             serverCapabilities["completionProvider"] = json::object();
+                             serverCapabilities["textDocumentSync"] = FULL;
+                             return serverCapabilities;
+                         }()
+                        );
+                    auto msg = lsp_test::ResponseMessage(id,result);
 
-                    json response = lsp_test::initialize_responce(msg);
+                    json response = lsp_test::initialize_response(msg);
                     logger.log(response.dump(),LogLevel::SERVER);
                     sendResponse(response);
                 }
                 else if (method == "textDocument/completion") {
+                    // int id = message["id"].get<int>();
+                    // lsp_test::CompletionParams params = message["params"];
+                    // // auto msg = lsp_test::RequestMessage<lsp_test::CompletionParams>(id,method,params);
+                    // auto msg = lsp_test::RequestMessage(id);
+                    // json response = lsp_test::completion(msg,documents);
+                    // logger.log(response.dump(),LogLevel::SERVER);
+                    // sendResponse(response);
                     int id = message["id"].get<int>();
-                    auto msg = lsp_test::ResponseMessage(id);
-                    lsp_test::CompletionList completion;
-                    completion.isIncomplete = false;
-                    json response = lsp_test::completion(msg, completion);
+                    auto msg = lsp_test::RequestMessage<lsp_test::CompletionParams>(id,method,message["params"]);
+                    json response = lsp_test::completion(msg);
                     logger.log(response.dump(),LogLevel::SERVER);
                     sendResponse(response);
                 }
-                else if (method == "textDocument/didChange") {
-                    lsp_test::DidChangeTextDocumentParams params = message["params"];
-                    auto notification = lsp_test::NotificationMessage(method,params);
-                    json request = lsp_test::DidChange(notification);
-                    logger.log(request.dump(),LogLevel::CLIENT);
-                }
+                // else if (method == "textDocument/didChange") {
+                //     lsp_test::DidChangeTextDocumentParams params = message["params"];
+                //     auto notification = lsp_test::NotificationMessage<lsp_test::DidChangeTextDocumentParams>(method,params);
+                //     // Почини JSON, он не правильно закидывает аргументы в него
+                //     json request = lsp_test::DidChange(notification);
+                //
+                //     if (notification.params.has_value())
+                //         documents.textDocuments[notification.params.value().textDocument] = notification.params.value().contentChange[0].text;
+                //     logger.log(documents.textDocuments[notification.params.value().textDocument],LogLevel::INFO);
+                //     logger.log(request.dump(),LogLevel::CLIENT);
+                // }
 
                 // TODO: Parse JSON and respond accordingly
                 // std::cerr << "Received: " << body << std::endl;
