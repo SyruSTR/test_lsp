@@ -86,21 +86,49 @@ int main() {
                     // sendResponse(response);
                     int id = message["id"].get<int>();
                     auto msg = lsp_test::RequestMessage<lsp_test::CompletionParams>(id,method,message["params"]);
+
+                    std::optional<std::string> content;
+                    if (documents.textDocuments.contains(msg.params->textDocument))
+                        content = documents.textDocuments.at(msg.params->textDocument);
+                    else {
+                        contentLength = 0;
+                        continue;
+                    }
+                        // content = std::nullopt;
+                    // logger.log(content,LogLevel::INFO);
+                    std::istringstream f(content.value());
+                    std::string currentLine;
+                    int i = 0;
+                    while (getline(f, line, '\n')) {
+                        if (i == msg.params->position.line)
+                            currentLine = line;
+                        i++;
+                    }
+                    if (currentLine.empty()) {
+                        contentLength = 0;
+                        continue;
+                    }
+
+                    std::string lineUntilCursor = currentLine.substr(0, msg.params->position.character);
+
+                    std::regex pattern(".*\\W(.*?)");
+                    auto word = std::regex_replace(lineUntilCursor, pattern, "$1");
+                    logger.log(currentLine+" | "+lineUntilCursor+" | "+word, LogLevel::INFO);
+
                     json response = lsp_test::completion(msg);
                     logger.log(response.dump(),LogLevel::SERVER);
                     sendResponse(response);
                 }
-                // else if (method == "textDocument/didChange") {
-                //     lsp_test::DidChangeTextDocumentParams params = message["params"];
-                //     auto notification = lsp_test::NotificationMessage<lsp_test::DidChangeTextDocumentParams>(method,params);
-                //     // Почини JSON, он не правильно закидывает аргументы в него
-                //     json request = lsp_test::DidChange(notification);
-                //
-                //     if (notification.params.has_value())
-                //         documents.textDocuments[notification.params.value().textDocument] = notification.params.value().contentChange[0].text;
-                //     logger.log(documents.textDocuments[notification.params.value().textDocument],LogLevel::INFO);
-                //     logger.log(request.dump(),LogLevel::CLIENT);
-                // }
+                else if (method == "textDocument/didChange") {
+                    lsp_test::DidChangeTextDocumentParams params = message["params"];
+                    auto notification = lsp_test::NotificationMessage<lsp_test::DidChangeTextDocumentParams>(method,params);
+                    json request = lsp_test::DidChange(notification);
+
+                    if (notification.params.has_value())
+                        documents.textDocuments[notification.params.value().textDocument] = notification.params.value().contentChange[0].text;
+                    // logger.log(documents.textDocuments[notification.params.value().textDocument],LogLevel::INFO);
+                    logger.log(request.dump(),LogLevel::CLIENT);
+                }
 
                 // TODO: Parse JSON and respond accordingly
                 // std::cerr << "Received: " << body << std::endl;

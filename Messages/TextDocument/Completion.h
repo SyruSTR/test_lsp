@@ -37,7 +37,7 @@ namespace lsp_test {
         CompletionResult completionResult;
 
 
-        completionResult.completion_list.isIncomplete = false;
+        completionResult.completion_list.isIncomplete = true;
         completionResult.completion_list.items.emplace_back("TypeScript");
         completionResult.completion_list.items.emplace_back("LSP");
         completionResult.completion_list.items.emplace_back("Lua");
