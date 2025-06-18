@@ -8,6 +8,8 @@
 
 namespace lsp_test {
 
+#define MAX_LENGTH 1000
+
     using json = nlohmann::json;
 
     struct CompletionItem {
@@ -29,7 +31,8 @@ namespace lsp_test {
         }
     };
 
-    void to_json(json& j, const CompletionList& cl) {
+    void to_json(json& j, CompletionList& cl) {
+        cl.isIncomplete = cl.items.capacity() == MAX_LENGTH;
         j = {
             {"isIncomplete", cl.isIncomplete},
             {"items", cl.items}
