@@ -48,7 +48,6 @@ namespace lsp_test {
     template<typename T, std::enable_if_t<std::is_base_of_v<Params, T>, bool> = true>
     void to_json(json &j, const RequestMessage<T> &msg) {
         to_json(j,static_cast<const Message &>(msg));
-        // j["id"] = msg.id;
         j.push_back({"id",msg.id});
         j.push_back({"method",msg.method});
         j.push_back({"params",msg.params});

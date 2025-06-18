@@ -28,16 +28,6 @@ namespace lsp_test {
         method(method), params(params) {}
     };
 
-    // void from_json(const json& j, std::variant<std::vector<std::string>, std::string>& v) {
-    //     if (j.is_array()) {
-    //         v = j.get<std::vector<std::string>>();
-    //     } else if (j.is_string()) {
-    //         v = j.get<std::string>();
-    //     } else {
-    //         throw std::invalid_argument("Expected string or array of strings for 'params'");
-    //     }
-    // }
-
     template<typename T, std::enable_if_t<std::is_base_of_v<Params, T>, bool> = true>
     void to_json(json &j, const NotificationMessage<T> &msg) {
         to_json(j,static_cast<Message>(msg));
@@ -51,9 +41,6 @@ namespace lsp_test {
 
         j.at("method").get_to(msg.method);
         if (j.contains("params") && !j["params"].is_null()) {
-            // std::variant<std::vector<std::string>, std::string> tmp;
-            // from_json(j.at("params"), tmp);
-            // msg.params = std::move(tmp);
             msg.params = j.at("params").get<T>();
         }
         else

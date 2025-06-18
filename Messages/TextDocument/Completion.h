@@ -45,10 +45,6 @@ namespace lsp_test {
 
         ResponseMessage<CompletionResult> response = ResponseMessage(msg.id,completionResult);
         json j = response;
-        // j["result"].push_back({"items",completionList.items});
-        // for (const auto &item : ComList.items) {
-        //     response["result"]["items"].push_back(item.label);
-        // }
         return response;
     }
 }

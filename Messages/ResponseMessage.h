@@ -22,27 +22,10 @@ namespace lsp_test {
         Message(jsonrpc),
         id(id),
         result(result){}
-            // ServerInfo{},
-            // [] {
-            //     //TODO json -> ServerCapabilities
-            //      json serverCapabilities;
-            //      serverCapabilities["capabilities"]["completionProvider"] = json::object();
-            //      serverCapabilities["capabilities"]["textDocumentSync"] = FULL;
-            //      return serverCapabilities;
-            // }()){}
 
         ResponseMessage(const int64_t id, const T result) :
         id(id),
         result(result)
-        //     ServerInfo{},
-        //     [] {
-        //         //TODO json -> ServerCapabilities
-        //         json serverCapabilities;
-        //         serverCapabilities["capabilities"]["completionProvider"] = json::object();
-        //         serverCapabilities["capabilities"]["textDocumentSync"] = FULL;
-        //         return serverCapabilities;
-        //     }()
-        // )
         {
             this->jsonrpc = Message().jsonrpc;
         }
