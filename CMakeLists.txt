@@ -29,6 +29,11 @@ set(SOURCE_FILES
         Messages/ResponceResult.h
         Messages/TextDocument/CompletionResult.h
         Messages/TextDocument/CompletionList.h
+        Messages/TextDocument/FullDocumentDiagnosticReport.h
+        Messages/TextDocument/Diagnostic.h
+        Messages/Range.h
+        Messages/TextDocument/DiagnosticStruct.h
+        Messages/TextDocument/DocumentDiagnosticParams.h
 )
 
 add_executable(my-lsp-server ${SOURCE_FILES})

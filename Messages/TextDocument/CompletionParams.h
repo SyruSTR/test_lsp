@@ -19,6 +19,11 @@ namespace lsp_test {
         j.at("character").get_to(pos.character);
     }
 
+    void to_json(json& j, const Position& pos) {
+        j["line"] = pos.line;
+        j["character"] = pos.character;
+    }
+
     struct TextDocumentPositionParams : Params {
         TextDocumentIdentifier textDocument;
         Position position;

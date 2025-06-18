@@ -15,6 +15,7 @@
 #include "Messages/TextDocument/DidChange.h"
 #include "Documents.h"
 #include "Messages/TextDocument/CompletionParams.h"
+#include "Messages/TextDocument/Diagnostic.h"
 using json = nlohmann::json;
 
 
@@ -62,6 +63,14 @@ int main() {
                              json serverCapabilities;
                              serverCapabilities["completionProvider"] = json::object();
                              serverCapabilities["textDocumentSync"] = FULL;
+                            serverCapabilities["diagnosticProvider"] = {
+                                {
+                                    "interFileDependencies", false
+                                },
+                                {
+                                    "workspaceDiagnostics", false
+                                }
+                            };
                              return serverCapabilities;
                          }()
                         );
@@ -99,6 +108,7 @@ int main() {
 
                     std::regex pattern(".*\\W(.*?)");
                     auto word = std::regex_replace(lineUntilCursor, pattern, "$1");
+                    //TODO add words filter
                     logger.log(currentLine+" | "+lineUntilCursor+" | "+word, LogLevel::INFO);
 
                     json response = lsp_test::completion(msg);
@@ -113,6 +123,21 @@ int main() {
                     if (notification.params.has_value())
                         documents.textDocuments[notification.params.value().textDocument] = notification.params.value().contentChange[0].text;
                     logger.log(request.dump(),LogLevel::CLIENT);
+                }
+                else if (method == "textDocument/diagnostic") {
+                    int id = message["id"].get<int>();
+
+                    auto report = lsp_test::diagnostic();
+                    //hardcode
+                    json j;
+                    j = lsp_test::Message();
+                    j["id"] = id;
+                    // j["method"] = message["method"].get<std::string>();
+                    j["result"] = report;
+                    //end of hardcode
+                    // to_json(j,report);
+                    logger.log(j.dump(),LogLevel::SERVER);
+                    sendResponse(j);
                 }
 
                 // TODO: Parse JSON and respond accordingly
