@@ -10,9 +10,15 @@ DictionaryWords::DictionaryWords() {
     dictionary.clear();
 }
 
+DictionaryWords::DictionaryWords(const std::string &filepath) {
+    dictionary.clear();
+    AddWordsFromFile(filepath);
+}
+
+
 DictionaryWords::~DictionaryWords() = default;
 
-void DictionaryWords::AddWordsFromFile(std::string filePath) {
+void DictionaryWords::AddWordsFromFile(const std::string& filePath) {
     if (std::ifstream wordsFile(filePath); wordsFile.is_open()) {
         std::string bufferLine;
         while (wordsFile.good() && std::getline(wordsFile, bufferLine)) {

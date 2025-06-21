@@ -4,9 +4,9 @@
 
 #ifndef FULLDOCUMENTDIAGNOSTICREPORT_H
 #define FULLDOCUMENTDIAGNOSTICREPORT_H
-#include "../../external/json.hpp"
+#include "../../../external/json.hpp"
 #include "Diagnostic.h"
-#include "DiagnosticStruct.h"
+#include "../DiagnosticStruct.h"
 
 namespace lsp_test {
 

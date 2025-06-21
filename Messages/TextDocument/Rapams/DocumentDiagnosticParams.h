@@ -16,7 +16,7 @@ namespace lsp_test {
         TextDocumentIdentifier textDocument;
     };
 
-    void from_json(const json &j, DocumentDiagnosticParams &params) {
+    void inline from_json(const json &j, DocumentDiagnosticParams &params) {
         j.at("textDocument").get_to(params.textDocument);
     }
 }

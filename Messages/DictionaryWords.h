@@ -12,10 +12,11 @@
 class DictionaryWords {
 public:
     DictionaryWords();
+    DictionaryWords(const std::string& filepath);
     ~DictionaryWords();
 
     bool Contains(const std::string& word) const;
-    void AddWordsFromFile(std::string filePath);
+    void AddWordsFromFile(const std::string& filePath);
     void WrapToCompletionList(lsp_test::CompletionList &completionList) const;
     void WrapToCompletionList(lsp_test::CompletionList &completionList, const std::string& starts_with) const;
 

@@ -14,12 +14,12 @@ namespace lsp_test {
         int64_t character;
     };
 
-    void from_json(const json& j, Position& pos) {
+    void inline from_json(const json& j, Position& pos) {
         j.at("line").get_to(pos.line);
         j.at("character").get_to(pos.character);
     }
 
-    void to_json(json& j, const Position& pos) {
+    void inline to_json(json& j, const Position& pos) {
         j["line"] = pos.line;
         j["character"] = pos.character;
     }
@@ -29,7 +29,7 @@ namespace lsp_test {
         Position position;
     };
 
-    void from_json(const json& j, TextDocumentPositionParams& params) {
+    void inline from_json(const json& j, TextDocumentPositionParams& params) {
         j.at("textDocument").get_to(params.textDocument);
         j.at("position").get_to(params.position);
     }
