@@ -21,11 +21,11 @@ namespace lsp_test {
 
 
 
-    void to_json(json &j, const TextDocumentIdentifier &id) {
+    void inline  to_json(json &j, const TextDocumentIdentifier &id) {
         j["uri"] = id.uri;
     }
 
-    void from_json(const nlohmann::json& j, TextDocumentIdentifier& id) {
+    void inline  from_json(const nlohmann::json& j, TextDocumentIdentifier& id) {
         j.at("uri").get_to(id.uri);
     }
 
@@ -33,12 +33,12 @@ namespace lsp_test {
         int64_t version;
     };
 
-    void to_json(json &j, const VersionedTextDocumentIdentifier &id) {
+    void inline  to_json(json &j, const VersionedTextDocumentIdentifier &id) {
         to_json(j, static_cast<TextDocumentIdentifier>(id));
         j["version"] = id.version;
     }
 
-    void from_json(const json& j, VersionedTextDocumentIdentifier& id) {
+    void inline from_json(const json& j, VersionedTextDocumentIdentifier& id) {
         from_json(j, static_cast<TextDocumentIdentifier &>(id));
         j.at("version").get_to(id.version);
     }
@@ -47,11 +47,11 @@ namespace lsp_test {
         std::string text;
     };
 
-    void to_json(json &j, const TextDocumentContentChangeEvent &event) {
+    void inline  to_json(json &j, const TextDocumentContentChangeEvent &event) {
         j["text"] = event.text;
     }
 
-    void from_json(const json& j, TextDocumentContentChangeEvent& event) {
+    void inline from_json(const json& j, TextDocumentContentChangeEvent& event) {
         j.at("text").get_to(event.text);
     }
 
@@ -60,12 +60,12 @@ namespace lsp_test {
         std::vector<TextDocumentContentChangeEvent> contentChange;
     };
 
-    void to_json(json &j, const DidChangeTextDocumentParams &params) {
+    void inline to_json(json &j, const DidChangeTextDocumentParams &params) {
         j["textDocument"] = params.textDocument;
         j["contentChanges"] = params.contentChange;
     }
 
-    void from_json(const json& j, DidChangeTextDocumentParams &params) {
+    void inline from_json(const json& j, DidChangeTextDocumentParams &params) {
         j.at("textDocument").get_to(params.textDocument);
         j.at("contentChanges").get_to(params.contentChange);
     }

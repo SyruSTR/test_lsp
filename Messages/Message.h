@@ -19,11 +19,11 @@ namespace lsp_test {
         }
     };
 
-    void to_json(json &j, const Message &msg) {
+    void inline to_json(json &j, const Message &msg) {
         j["jsonrpc"] = msg.jsonrpc;
     }
 
-    void from_json(const json &j, Message &msg) {
+    void inline from_json(const json &j, Message &msg) {
         j.at("jsonrpc").get_to(msg.jsonrpc);
     }
 }

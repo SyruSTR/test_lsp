@@ -20,7 +20,7 @@ namespace lsp_test {
         }
     };
 
-    void to_json(json &j, const CompletionResult &r) {
+    void inline to_json(json &j, const CompletionResult &r) {
         to_json(j, r.completion_list);
     }
 }

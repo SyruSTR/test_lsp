@@ -18,7 +18,7 @@ namespace lsp_test {
         }
     };
 
-    void to_json(json &j, const ServerInfo &info) {
+    void inline to_json(json &j, const ServerInfo &info) {
         j = json{
             {"name", info.name},
             {"version",info.version},

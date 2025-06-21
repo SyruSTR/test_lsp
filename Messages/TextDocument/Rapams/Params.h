@@ -5,6 +5,8 @@
 #ifndef PARAMS_H
 #define PARAMS_H
 
+#include "../external/json.hpp"
+
 namespace lsp_test  {
 
     using json = nlohmann::json;
@@ -13,8 +15,8 @@ namespace lsp_test  {
 
     };
 
-    void to_json(json& j, const Params& params) {}
+    void inline to_json(json& j, const Params& params) {}
 
-};
+}
 
 #endif //PARAMS_H

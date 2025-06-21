@@ -14,6 +14,6 @@ namespace lsp_test {
 
     };
 
-    void to_json(json& j, const ResponseResult& result) {}
+    void inline to_json(json& j, const ResponseResult& result) {}
 }
 #endif //RESPONCERESULT_H

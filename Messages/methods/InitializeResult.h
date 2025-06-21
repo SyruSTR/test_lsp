@@ -20,7 +20,7 @@ namespace lsp_test {
         InitializerResult(const ServerInfo& server_info, const json& capabilities) : ResponseResult(), serverInfo(server_info), capabilities(capabilities) {}
     };
 
-    void to_json(json& j, const InitializerResult& result) {
+    void inline to_json(json& j, const InitializerResult& result) {
         j["capabilities"] = result.capabilities;
         j["serverInfo"] = result.serverInfo;
     }
