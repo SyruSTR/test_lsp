@@ -6,7 +6,7 @@
 #define DICTIONARYWORDS_H
 #include <string>
 #include <unordered_set>
-#include <vector>
+#include "TextDocument/CompletionList.h"
 
 
 class DictionaryWords {
@@ -15,12 +15,13 @@ public:
     ~DictionaryWords();
 
     bool Contains(const std::string& word) const;
+    void AddWordsFromFile(std::string filePath);
+    void WrapToCompletionList(lsp_test::CompletionList &completionList) const;
+    void WrapToCompletionList(lsp_test::CompletionList &completionList, const std::string& starts_with) const;
 
 private:
 
-    std::unordered_set<std::string> dictionaty;
-
-    void AddWordsFromFile(std::string filePath);
+    std::unordered_set<std::string> dictionary;
 
 };
 

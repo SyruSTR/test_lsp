@@ -7,12 +7,11 @@
 #include <string>
 #include <vector>
 
-#include "CompletionList.h"
 #include "CompletionResult.h"
+#include "../DictionaryWords.h"
 #include "../RequestMessage.h"
 #include "../ResponseMessage.h"
 #include "../../external/json.hpp"
-#include "../../Documents.h"
 
 namespace lsp_test {
 
@@ -33,14 +32,17 @@ namespace lsp_test {
     //     return request;
     // }
     template<typename T, std::enable_if_t<std::is_base_of_v<Params, T>, bool> = true>
-    json completion(const RequestMessage<T>& msg) {
+    json completion(const RequestMessage<T>& msg, const DictionaryWords& dictionary, std::string starts_with) {
         CompletionResult completionResult;
+
+        dictionary.WrapToCompletionList(completionResult.completion_list,starts_with);
 
 
         completionResult.completion_list.isIncomplete = true;
-        completionResult.completion_list.items.emplace_back("TypeScript");
-        completionResult.completion_list.items.emplace_back("LSP");
-        completionResult.completion_list.items.emplace_back("Lua");
+        // completionResult.completion_list.items.emplace_back("TypeScript");
+        // completionResult.completion_list.items.emplace_back("LSP");
+        // completionResult.completion_list.items.emplace_back("Lua");
+        //dictionary.WrapToCompletionList(completionResult.completion_list);
 
 
         ResponseMessage<CompletionResult> response = ResponseMessage(msg.id,completionResult);

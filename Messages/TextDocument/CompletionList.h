@@ -18,7 +18,7 @@ namespace lsp_test {
         CompletionItem(const std::string &label_) : label(label_) {}
     };
 
-    void to_json(json &j, const CompletionItem &ci) {
+    inline void to_json(json &j, const CompletionItem &ci) {
         j = {{"label", ci.label}};
     }
 
@@ -31,7 +31,7 @@ namespace lsp_test {
         }
     };
 
-    void to_json(json& j, const CompletionList& cl) {
+    inline void to_json(json& j, const CompletionList& cl) {
         j = {
             {"isIncomplete", cl.items.capacity() == MAX_LENGTH},
             {"items", cl.items}

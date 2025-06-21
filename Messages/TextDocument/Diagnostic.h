@@ -8,11 +8,10 @@
 
 namespace lsp_test {
 
-    // template <typename T, std::enable_if_t<std::is_base_of_v<Params, T>, bool> = true>
-    FullDocumentDiagnosticReport diagnostic(){
-    // FullDocumentDiagnosticReport diagnostic(RequestMessage<T> & msg) {
-        const auto report = FullDocumentDiagnosticReport();
-        return report;
+    template <typename T, std::enable_if_t<std::is_base_of_v<Params, T>, bool> = true>
+    json diagnostic(RequestMessage<T> & msg) {
+        json j;
+        return j;
     }
 
 }

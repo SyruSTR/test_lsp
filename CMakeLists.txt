@@ -34,6 +34,8 @@ set(SOURCE_FILES
         Messages/Range.h
         Messages/TextDocument/DiagnosticStruct.h
         Messages/TextDocument/DocumentDiagnosticParams.h
+        Messages/DictionaryWords.cpp
+        Messages/DictionaryWords.h
 )
 
 add_executable(my-lsp-server ${SOURCE_FILES})

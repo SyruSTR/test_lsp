@@ -14,8 +14,10 @@
 #include "Messages/ResponseMessage.h"
 #include "Messages/TextDocument/DidChange.h"
 #include "Documents.h"
+#include "Messages/DictionaryWords.h"
 #include "Messages/TextDocument/CompletionParams.h"
 #include "Messages/TextDocument/Diagnostic.h"
+#include "Messages/TextDocument/DocumentDiagnosticParams.h"
 using json = nlohmann::json;
 
 
@@ -30,6 +32,12 @@ void sendResponse(const json& response) {
     std::cout.flush();
 }
 
+std::vector<std::string> resplit(const std::string &s, const std::regex &sep_regex = std::regex{"\\s+"}) {
+    std::sregex_token_iterator iter(s.begin(), s.end(), sep_regex, -1);
+    std::sregex_token_iterator end;
+    return {iter, end};
+}
+
 int main() {
     waitForDebugger();
     Logger logger("/tmp/lsp-log.txt");
@@ -39,6 +47,10 @@ int main() {
     int contentLength = 0;
 
     lsp_test::Documents documents;
+
+    DictionaryWords dictionaryWords;
+
+    dictionaryWords.AddWordsFromFile("/usr/share/dict/words");
 
     while (std::getline(std::cin, line)) {
         if (line == "\r" || line.empty()) {
@@ -107,11 +119,12 @@ int main() {
                     std::string lineUntilCursor = currentLine.substr(0, msg.params->position.character);
 
                     std::regex pattern(".*\\W(.*?)");
-                    auto word = std::regex_replace(lineUntilCursor, pattern, "$1");
+                    auto currentWord = std::regex_replace(lineUntilCursor, pattern, "$1");
                     //TODO add words filter
-                    logger.log(currentLine+" | "+lineUntilCursor+" | "+word, LogLevel::INFO);
+                    logger.log(currentLine+" | "+lineUntilCursor+" | "+currentWord, LogLevel::INFO);
 
-                    json response = lsp_test::completion(msg);
+                    // переписать на класс, а то это уже не смешно(
+                    json response = lsp_test::completion(msg,dictionaryWords, currentWord);
                     logger.log(response.dump(),LogLevel::SERVER);
                     sendResponse(response);
                 }
@@ -125,9 +138,29 @@ int main() {
                     logger.log(request.dump(),LogLevel::CLIENT);
                 }
                 else if (method == "textDocument/diagnostic") {
+
                     int id = message["id"].get<int>();
 
-                    auto report = lsp_test::diagnostic();
+                    auto request = lsp_test::RequestMessage<lsp_test::DocumentDiagnosticParams>(id,method,message["params"]);
+
+
+                    // std::optional<std::string> content;
+                    // if (documents.textDocuments.contains(msg.params->textDocument))
+                    //     content = documents.textDocuments.at(msg.params->textDocument);
+                    // else {
+                    //     contentLength = 0;
+                    //     continue;
+                    // }
+                    //
+                    // auto wordsInDocument = resplit(content.value(),std::regex("\\W"));
+                    //
+                    // vector<std::string> invalidWords;
+                    //
+                    // for (auto std::string& word : wordsInDocument) {
+                    //
+                    // }
+
+                    auto report = lsp_test::diagnostic<lsp_test::DocumentDiagnosticParams>(request);
                     //hardcode
                     json j;
                     j = lsp_test::Message();
