@@ -21,19 +21,19 @@ set(SOURCE_FILES
         Messages/TextDocument/TextDocumentSync.h
         Messages/TextDocument/DidChange.h
         Messages/NotificationMessage.h
-        Messages/TextDocument/DidChangeTextParams.h
+        Messages/TextDocument/Rapams/DidChangeTextParams.h
         Documents.h
-        Messages/TextDocument/CompletionParams.h
-        Messages/TextDocument/Params.h
+        Messages/TextDocument/Rapams/CompletionParams.h
+        Messages/TextDocument/Rapams/Params.h
         Messages/methods/InitializeResult.h
         Messages/ResponceResult.h
-        Messages/TextDocument/CompletionResult.h
+        Messages/TextDocument/Result/CompletionResult.h
         Messages/TextDocument/CompletionList.h
         Messages/TextDocument/FullDocumentDiagnosticReport.h
         Messages/TextDocument/Diagnostic.h
         Messages/Range.h
         Messages/TextDocument/DiagnosticStruct.h
-        Messages/TextDocument/DocumentDiagnosticParams.h
+        Messages/TextDocument/Rapams/DocumentDiagnosticParams.h
         Messages/DictionaryWords.cpp
         Messages/DictionaryWords.h
 )

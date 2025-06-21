@@ -7,8 +7,8 @@
 #include <variant>
 
 #include "Message.h"
-#include "TextDocument/DidChangeTextParams.h"
-#include "TextDocument/Params.h"
+#include "TextDocument/Rapams/DidChangeTextParams.h"
+#include "TextDocument/Rapams/Params.h"
 
 
 namespace lsp_test {

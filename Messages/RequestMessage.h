@@ -6,7 +6,7 @@
 #define REQUESTMESSAGE_H
 
 #include "Message.h"
-#include "TextDocument/CompletionParams.h"
+#include "TextDocument/Rapams/CompletionParams.h"
 
 namespace lsp_test {
 

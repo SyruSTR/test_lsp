@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "CompletionResult.h"
+#include "Result/CompletionResult.h"
 #include "../DictionaryWords.h"
 #include "../RequestMessage.h"
 #include "../ResponseMessage.h"

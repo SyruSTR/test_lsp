@@ -6,7 +6,7 @@
 #define DIAGNOSTICSTRUCT_H
 #include <string>
 
-#include "CompletionParams.h"
+#include "Rapams/CompletionParams.h"
 #include "../Range.h"
 
 namespace lsp_test {

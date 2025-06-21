@@ -5,7 +5,7 @@
 #ifndef DIDCHANGETEXTPARAMS_H
 #define DIDCHANGETEXTPARAMS_H
 #include "Params.h"
-#include "../../external/json.hpp"
+#include "../../../external/json.hpp"
 
 namespace lsp_test {
 

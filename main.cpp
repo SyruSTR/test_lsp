@@ -15,9 +15,9 @@
 #include "Messages/TextDocument/DidChange.h"
 #include "Documents.h"
 #include "Messages/DictionaryWords.h"
-#include "Messages/TextDocument/CompletionParams.h"
+#include "Messages/TextDocument/Rapams/CompletionParams.h"
 #include "Messages/TextDocument/Diagnostic.h"
-#include "Messages/TextDocument/DocumentDiagnosticParams.h"
+#include "Messages/TextDocument/Rapams/DocumentDiagnosticParams.h"
 using json = nlohmann::json;
 
 
