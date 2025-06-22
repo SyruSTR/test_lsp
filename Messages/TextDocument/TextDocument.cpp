@@ -13,6 +13,7 @@
 #include "TextDocumentSync.h"
 #include "../RequestMessage.h"
 #include "Rapams/DocumentDiagnosticParams.h"
+#include "Result/FullDocumentDiagnosticReport.h"
 
 #define GET_VALUE_FROM_JSON(variable, variable_name, json,variable_type) \
     if(json.contains(variable_name)) \
@@ -105,11 +106,11 @@ namespace  lsp_test {
         GET_VALUE_FROM_JSON(id,"id",j,typeof(int));
         auto request = RequestMessage<DocumentDiagnosticParams>(id,m_method,j["params"]);
 
-
+        auto report = FullDocumentDiagnosticReport();
         //hardcode
         nlohmann::json json_response = Message();
         json_response["id"] = id;
-        json_response["result"] = request;
+        json_response["result"] = report;
         //end of hardcode
 
         m_logger->log(json_response.dump(),LogLevel::SERVER);

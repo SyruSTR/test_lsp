@@ -5,7 +5,6 @@
 #ifndef FULLDOCUMENTDIAGNOSTICREPORT_H
 #define FULLDOCUMENTDIAGNOSTICREPORT_H
 #include "../../../external/json.hpp"
-#include "Diagnostic.h"
 #include "../DiagnosticStruct.h"
 
 namespace lsp_test {
@@ -18,7 +17,7 @@ namespace lsp_test {
         // std::optional<std::string> resultId;
         std::vector<Diagnostic> items;
 
-        //Hardcoded
+        //Hardcoded for test
         FullDocumentDiagnosticReport() {
             items.clear();
             Diagnostic diagnostic1;

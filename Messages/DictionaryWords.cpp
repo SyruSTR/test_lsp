@@ -43,7 +43,7 @@ void DictionaryWords::WrapToCompletionList(lsp_test::CompletionList &completionL
                          [starts_with](const std::string& word) {
                              return word.starts_with(starts_with);
                          });
-
+    // TODO add cutting to 1000 elements
     for (auto &word : buffer) {
         completionList.items.emplace_back(word);
     }
