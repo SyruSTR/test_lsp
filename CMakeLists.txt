@@ -32,6 +32,8 @@ set(SOURCE_FILES
         Messages/DictionaryWords.h
         Messages/TextDocument/TextDocument.cpp
         Messages/TextDocument/TextDocument.h
+        Messages/TextDocument/Rapams/DidOpenTextDocumentParams.h
+        Messages/TextDocument/TextDocumentItem.h
 )
 
 add_executable(my-lsp-server ${SOURCE_FILES})

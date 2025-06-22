@@ -4,6 +4,7 @@
 
 #ifndef TEXTDOCUMENT_H
 #define TEXTDOCUMENT_H
+#include <regex>
 #include <string>
 
 #include "Rapams/DidChangeTextParams.h"
@@ -25,7 +26,8 @@ namespace lsp_test {
 
     private:
         std::unique_ptr<DictionaryWords> m_dictionary;
-        std::map<TextDocumentIdentifier, std::string> m_textDocuments;
+        // key is an uri of document
+        std::map<std::string, std::string> m_textDocuments;
         std::unique_ptr<Logger> m_logger;
         std::shared_ptr<std::string> m_currentReadedLine;
 
@@ -37,9 +39,12 @@ namespace lsp_test {
 
         void didChange(const nlohmann::json& j);
 
+        void didOpen(const nlohmann::json& j);
+
         void initialize_response(const nlohmann::json& j);
 
         void sendResponse(const nlohmann::json& response);
+        std::vector<std::string> resplit(const std::string &s, const std::regex &sep_regex );
     };
 }
 

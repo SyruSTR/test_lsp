@@ -12,6 +12,7 @@
 #include "../NotificationMessage.h"
 #include "TextDocumentSync.h"
 #include "../RequestMessage.h"
+#include "Rapams/DidOpenTextDocumentParams.h"
 #include "Rapams/DocumentDiagnosticParams.h"
 #include "Result/FullDocumentDiagnosticReport.h"
 
@@ -55,6 +56,9 @@ namespace  lsp_test {
         else if (m_method == "textDocument/diagnostic") {
             diagnostic(message);
         }
+        else if (m_method == "textDocument/didOpen") {
+            didOpen(message);
+        }
     }
 
 
@@ -65,8 +69,8 @@ namespace  lsp_test {
 
         auto request = RequestMessage<CompletionParams>(id,m_method,j["params"]);
         std::optional<std::string> content;
-        if (m_textDocuments.contains(request.params->textDocument))
-            content = m_textDocuments.at(request.params->textDocument);
+        if (m_textDocuments.contains(request.params->textDocument.uri))
+            content = m_textDocuments.at(request.params->textDocument.uri);
         else {
             return;
         }
@@ -86,7 +90,6 @@ namespace  lsp_test {
         std::string lineUntilCursor = currentLine.substr(0, request.params->position.character);
         std::regex pattern(".*\\W(.*?)");
         auto currentWord = std::regex_replace(lineUntilCursor, pattern, "$1");
-        //TODO add words filter
         m_logger->log(currentLine+" | "+lineUntilCursor+" | "+currentWord, LogLevel::INFO);
 
         CompletionResult completionResult;
@@ -105,8 +108,36 @@ namespace  lsp_test {
         int id = 0;
         GET_VALUE_FROM_JSON(id,"id",j,typeof(int));
         auto request = RequestMessage<DocumentDiagnosticParams>(id,m_method,j["params"]);
+        std::optional<std::string> content;
+        if (m_textDocuments.contains(request.params->textDocument.uri))
+            content = m_textDocuments.at(request.params->textDocument.uri);
+        else {
+            return;
+        }
+
+        auto wordsInDocument = resplit(content.value(),std::regex("\\W"));
 
         auto report = FullDocumentDiagnosticReport();
+
+        std::vector<std::string> invalidWords;
+
+        for (std::string& word : wordsInDocument) {
+            if (!m_dictionary->Contains(word)) {
+                // invalidWords.push_back(word);
+                report.items.push_back({
+                    Diagnostic{
+                        Range{
+                            Position(0,0),
+                            Position(0,10),
+                        },
+                        ERROR,
+                        word + " is not in our dictionary"
+                    }
+                });
+            }
+
+        }
+
         //hardcode
         nlohmann::json json_response = Message();
         json_response["id"] = id;
@@ -115,6 +146,12 @@ namespace  lsp_test {
 
         m_logger->log(json_response.dump(),LogLevel::SERVER);
         sendResponse(json_response);
+    }
+
+    std::vector<std::string> TextDocument::resplit(const std::string &s, const std::regex &sep_regex = std::regex{"\\s+"}) {
+        std::sregex_token_iterator iter(s.begin(), s.end(), sep_regex, -1);
+        std::sregex_token_iterator end;
+        return {iter, end};
     }
 
     void TextDocument::sendResponse(const nlohmann::json& response) {
@@ -131,11 +168,25 @@ namespace  lsp_test {
         auto notification = NotificationMessage<DidChangeTextDocumentParams>(m_method, params);
 
         if (notification.params.has_value())
-            m_textDocuments[notification.params.value().textDocument] = notification.params.value().contentChange[0].text;
+            m_textDocuments[notification.params.value().textDocument.uri] = notification.params.value().contentChange[0].text;
 
         const nlohmann::json json_notification;
         m_logger->log(json_notification.dump(),LogLevel::CLIENT);
     }
+
+    void TextDocument::didOpen(const nlohmann::json &j) {
+        DidOpenTextDocumentParams params;
+        GET_VALUE_FROM_JSON(params,"params",j,typeof(params))
+
+        auto notification = NotificationMessage<DidOpenTextDocumentParams>(m_method, params);
+
+        if (notification.params.has_value())
+            m_textDocuments[notification.params.value().textDocument.uri] = notification.params.value().textDocument.text;
+
+        const nlohmann::json json_notification;
+        m_logger->log(json_notification.dump(),LogLevel::CLIENT);
+    }
+
 
     void TextDocument::initialize_response(const nlohmann::json& j) {
         int id = 0;

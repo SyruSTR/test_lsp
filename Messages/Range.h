@@ -14,6 +14,8 @@ namespace lsp_test {
     struct Range {
         Position start;
         Position end;
+
+        Range(const Position& start, const Position& end): start(start), end(end) {}
     };
 
     void to_json(nlohmann::json& j, const Range& r) {

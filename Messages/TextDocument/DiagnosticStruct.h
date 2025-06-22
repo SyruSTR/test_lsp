@@ -27,7 +27,9 @@ namespace lsp_test {
         std::string message;
         // data
 
-        Diagnostic(): range(Position()), severity(ERROR) {
+        Diagnostic(const Range& range, const DiagnosticSeverity severity): range(range), severity(severity) {
+        }
+        Diagnostic(const Range& range, const DiagnosticSeverity severity, const std::string& message): range(range), severity(severity), message(message) {
         }
 
         bool operator<(const Diagnostic &other) const {
