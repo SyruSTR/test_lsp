@@ -34,8 +34,13 @@ set(SOURCE_FILES
         Messages/TextDocument/Params/DidOpenTextDocumentParams.h
         Messages/TextDocument/TextDocumentItem.h
 )
+option(DEBUGING "Enable debugging" OFF)
 
 add_executable(my-lsp-server ${SOURCE_FILES})
+if(DEBUGING)
+    message(STATUS "Debugging is enabled.")
+    target_compile_definitions(my-lsp-server PRIVATE DEBUG)
+endif()
 target_include_directories(my-lsp-server PRIVATE external/)
 
 

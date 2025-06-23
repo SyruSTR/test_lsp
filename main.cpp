@@ -10,12 +10,17 @@
 using json = nlohmann::json;
 
 
+#ifdef DEBUG
 void waitForDebugger() {
     raise(SIGSTOP);
 }
+#endif
 
 int main() {
+#ifdef DEBUG
     waitForDebugger();
+#endif
+
 
     std::string header;
     std::string line;
