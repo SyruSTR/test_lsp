@@ -44,7 +44,7 @@ void DictionaryWords::WrapToCompletionList(lsp_test::CompletionList &completionL
                              return word.starts_with(starts_with);
                          });
     // TODO add cutting to 1000 elements
-    const auto it_end = buffer.capacity() > MAX_LENGTH ? buffer.begin()+MAX_LENGTH : buffer.end();
+    const auto it_end = buffer.size() > MAX_LENGTH ? buffer.begin()+MAX_LENGTH : buffer.end();
 
     std::copy(buffer.begin(), it_end, std::back_inserter(completionList.items));
     // for (auto &word : buffer) {

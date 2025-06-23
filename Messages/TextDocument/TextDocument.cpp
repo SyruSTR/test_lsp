@@ -116,6 +116,12 @@ namespace  lsp_test {
         }
 
         auto wordsInDocument = resplit(content.value(),std::regex("\\W"));
+        auto lines = resplit(content.value(),std::regex("\n"));
+        //erase empty words
+        std::erase_if(wordsInDocument,
+                      [this](const std::string& line) {
+                          return line.empty();
+                      });
 
         auto report = FullDocumentDiagnosticReport();
 
@@ -123,17 +129,24 @@ namespace  lsp_test {
 
         for (std::string& word : wordsInDocument) {
             if (!m_dictionary->Contains(word)) {
-                // invalidWords.push_back(word);
-                report.items.push_back({
-                    Diagnostic{
-                        Range{
-                            Position(0,0),
-                            Position(0,10),
-                        },
-                        ERROR,
-                        word + " is not in our dictionary"
+                std::regex pattern("\\b"+word+"\\b");
+                for (int i=0; i < lines.size(); i++) {
+
+                    auto matches = std::sregex_iterator(lines[i].begin(),lines[i].end(),pattern);
+                    auto matches_end = std::sregex_iterator();
+                    for (std::sregex_iterator match = matches; match != matches_end; ++match) {
+                        report.items.push_back({
+                            Diagnostic{
+                                Range{
+                                    Position(i,match->position()),
+                                    Position(i,match->position()+word.length()),
+                                },
+                                ERROR,
+                                word + " is not in our dictionary"
+                            }
+                        });
                     }
-                });
+                }
             }
 
         }
