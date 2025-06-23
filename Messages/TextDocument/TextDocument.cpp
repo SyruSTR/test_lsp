@@ -12,8 +12,8 @@
 #include "../NotificationMessage.h"
 #include "TextDocumentSync.h"
 #include "../RequestMessage.h"
-#include "Rapams/DidOpenTextDocumentParams.h"
-#include "Rapams/DocumentDiagnosticParams.h"
+#include "Params/DidOpenTextDocumentParams.h"
+#include "Params/DocumentDiagnosticParams.h"
 #include "Result/FullDocumentDiagnosticReport.h"
 
 #define GET_VALUE_FROM_JSON(variable, variable_name, json,variable_type) \

@@ -17,22 +17,21 @@ set(SOURCE_FILES
         Messages/RequestMessage.h
         Messages/TextDocument/TextDocumentSync.h
         Messages/NotificationMessage.h
-        Messages/TextDocument/Rapams/DidChangeTextParams.h
-        Documents.h
-        Messages/TextDocument/Rapams/CompletionParams.h
-        Messages/TextDocument/Rapams/Params.h
-        Messages/ResponceResult.h
+        Messages/TextDocument/Params/DidChangeTextParams.h
+        Messages/TextDocument/Params/CompletionParams.h
+        Messages/TextDocument/Params/Params.h
+        Messages/ResponseResult.h
         Messages/TextDocument/Result/CompletionResult.h
         Messages/TextDocument/CompletionList.h
         Messages/TextDocument/Result/FullDocumentDiagnosticReport.h
         Messages/Range.h
         Messages/TextDocument/DiagnosticStruct.h
-        Messages/TextDocument/Rapams/DocumentDiagnosticParams.h
+        Messages/TextDocument/Params/DocumentDiagnosticParams.h
         Messages/DictionaryWords.cpp
         Messages/DictionaryWords.h
         Messages/TextDocument/TextDocument.cpp
         Messages/TextDocument/TextDocument.h
-        Messages/TextDocument/Rapams/DidOpenTextDocumentParams.h
+        Messages/TextDocument/Params/DidOpenTextDocumentParams.h
         Messages/TextDocument/TextDocumentItem.h
 )
 

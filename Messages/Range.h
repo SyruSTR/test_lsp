@@ -5,7 +5,7 @@
 #ifndef RANGE_H
 #define RANGE_H
 #include "../external/json.hpp"
-#include "TextDocument/Rapams/CompletionParams.h"
+#include "TextDocument/Params/CompletionParams.h"
 
 namespace lsp_test {
 

@@ -7,7 +7,7 @@
 #include <regex>
 #include <string>
 
-#include "Rapams/DidChangeTextParams.h"
+#include "Params/DidChangeTextParams.h"
 #include "../../Logger/Logger.h"
 #include "../DictionaryWords.h"
 #include "Result/CompletionResult.h"

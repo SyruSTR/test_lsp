@@ -5,7 +5,7 @@
 #ifndef COMPLETIONRESULT_H
 #define COMPLETIONRESULT_H
 #include "../CompletionList.h"
-#include "../../ResponceResult.h"
+#include "../../ResponseResult.h"
 #include "../../../external/json.hpp"
 
 namespace lsp_test {

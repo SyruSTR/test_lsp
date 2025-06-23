@@ -1,0 +1,38 @@
+├── CMakeLists.txt
+├── Documents.h
+├── external
+│   ├── json.hpp
+│   └── test-VSCode-external-base
+├── LICENSE
+├── Logger
+│   ├── Logger.cpp
+│   └── Logger.h
+├── main.cpp
+├── Messages
+│   ├── DictionaryWords.cpp
+│   ├── DictionaryWords.h
+│   ├── Message.h
+│   ├── methods
+│   │   ├── InitializeResult.h
+│   │   └── ServerInfo.h
+│   ├── NotificationMessage.h
+│   ├── Range.h
+│   ├── RequestMessage.h
+│   ├── ResponseResult.h
+│   ├── ResponseMessage.h
+│   └── TextDocument
+│       ├── CompletionList.h
+│       ├── DiagnosticStruct.h
+│       ├── Params
+│       │   ├── CompletionParams.h
+│       │   ├── DidChangeTextParams.h
+│       │   ├── DidOpenTextDocumentParams.h
+│       │   ├── DocumentDiagnosticParams.h
+│       │   └── Params.h
+│       ├── Result
+│       │   ├── CompletionResult.h
+│       │   └── FullDocumentDiagnosticReport.h
+│       ├── TextDocument.cpp
+│       ├── TextDocument.h
+│       ├── TextDocumentItem.h
+│       └── TextDocumentSync.h
