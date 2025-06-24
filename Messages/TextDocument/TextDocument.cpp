@@ -66,8 +66,10 @@ namespace  lsp_test {
         int id = 0;
         GET_VALUE_FROM_JSON(id,"id",j,typeof(int));
 
-
+        //parse request from client
         auto request = RequestMessage<CompletionParams>(id,m_method,j["params"]);
+
+        //get content from current file
         std::optional<std::string> content;
         if (m_textDocuments.contains(request.params->textDocument.uri))
             content = m_textDocuments.at(request.params->textDocument.uri);
@@ -78,6 +80,7 @@ namespace  lsp_test {
         std::istringstream f(content.value());
         std::string currentLine;
         int i = 0;
+        // get needed line for providing
         while (getline(f, *m_currentReadedLine, '\n')) {
             if (i == request.params->position.line)
                 currentLine = *m_currentReadedLine;
@@ -88,14 +91,16 @@ namespace  lsp_test {
             return;
 
         std::string lineUntilCursor = currentLine.substr(0, request.params->position.character);
+        // extracts word after the last non-word character in the line
         std::regex pattern(".*\\W(.*?)");
         auto currentWord = std::regex_replace(lineUntilCursor, pattern, "$1");
         m_logger->log(currentLine+" | "+lineUntilCursor+" | "+currentWord, LogLevel::INFO);
 
         CompletionResult completionResult;
 
+        // wrap possibly words for completion to completion items
         m_dictionary->WrapToCompletionList(completionResult.completion_list,currentWord);
-        completionResult.completion_list.isIncomplete = true;
+
         ResponseMessage<CompletionResult> response = ResponseMessage(request.id,completionResult);
 
         nlohmann::json response_json = response;
@@ -107,7 +112,10 @@ namespace  lsp_test {
     void TextDocument::diagnostic(const nlohmann::json& j) {
         int id = 0;
         GET_VALUE_FROM_JSON(id,"id",j,typeof(int));
+
         auto request = RequestMessage<DocumentDiagnosticParams>(id,m_method,j["params"]);
+
+        //get content from current file
         std::optional<std::string> content;
         if (m_textDocuments.contains(request.params->textDocument.uri))
             content = m_textDocuments.at(request.params->textDocument.uri);
@@ -115,7 +123,9 @@ namespace  lsp_test {
             return;
         }
 
+        // get all words from current file
         auto wordsInDocument = resplit(content.value(),std::regex("\\W"));
+        // split content for lines
         auto lines = resplit(content.value(),std::regex("\n"));
         //erase empty words
         std::erase_if(wordsInDocument,
@@ -129,9 +139,11 @@ namespace  lsp_test {
 
         for (std::string& word : wordsInDocument) {
             if (!m_dictionary->Contains(word)) {
+                // get word
+                // \b means empty space
                 std::regex pattern("\\b"+word+"\\b");
                 for (int i=0; i < lines.size(); i++) {
-
+                    //looking wrong word in lines
                     auto matches = std::sregex_iterator(lines[i].begin(),lines[i].end(),pattern);
                     auto matches_end = std::sregex_iterator();
                     for (std::sregex_iterator match = matches; match != matches_end; ++match) {
@@ -180,6 +192,7 @@ namespace  lsp_test {
 
         auto notification = NotificationMessage<DidChangeTextDocumentParams>(m_method, params);
 
+        // add filepath to map and text from file
         if (notification.params.has_value())
             m_textDocuments[notification.params.value().textDocument.uri] = notification.params.value().contentChange[0].text;
 

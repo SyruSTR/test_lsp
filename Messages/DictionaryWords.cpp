@@ -35,21 +35,16 @@ void DictionaryWords::WrapToCompletionList(lsp_test::CompletionList &completionL
 
 
 void DictionaryWords::WrapToCompletionList(lsp_test::CompletionList &completionList, const std::string& starts_with) const {
-    // for (auto &word : dictionary) {
-    //     completionList.items.emplace_back(word);
-    // }
+
     std::vector<std::string> buffer;
     std::ranges::copy_if(dictionary,std::back_inserter(buffer),
                          [starts_with](const std::string& word) {
                              return word.starts_with(starts_with);
                          });
-    // TODO add cutting to 1000 elements
-    const auto it_end = buffer.size() > MAX_LENGTH ? buffer.begin()+MAX_LENGTH : buffer.end();
 
+    // cutting the buffer to 1000 elements
+    const auto it_end = buffer.size() > MAX_LENGTH ? buffer.begin()+MAX_LENGTH : buffer.end();
     std::copy(buffer.begin(), it_end, std::back_inserter(completionList.items));
-    // for (auto &word : buffer) {
-    //     completionList.items.emplace_back(word);
-    // }
 }
 
 bool DictionaryWords::Contains(const std::string& word) const {

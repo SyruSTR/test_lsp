@@ -26,6 +26,7 @@ int main() {
     std::string line;
     int contentLength = 0;
 
+    //send reference to current line from stdin
     lsp_test::TextDocument textDocument(&line);
 
     while (std::getline(std::cin, line)) {
@@ -40,6 +41,7 @@ int main() {
             }
         } else {
             std::smatch match;
+            // parse the header from client request or notification
             if (std::regex_search(line, match, std::regex("Content-Length: (\\d+)"))) {
                 contentLength = std::stoi(match[1]);
             }

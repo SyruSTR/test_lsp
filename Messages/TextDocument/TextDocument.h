@@ -10,7 +10,6 @@
 #include "Params/DidChangeTextParams.h"
 #include "../../Logger/Logger.h"
 #include "../DictionaryWords.h"
-#include "Result/CompletionResult.h"
 
 
 class DictionaryWords;

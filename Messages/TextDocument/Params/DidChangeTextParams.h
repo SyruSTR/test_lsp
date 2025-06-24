@@ -14,6 +14,7 @@ namespace lsp_test {
     struct TextDocumentIdentifier {
         std::string uri;
 
+        // needed for std::map
         bool operator<(const TextDocumentIdentifier& id) const {
             return uri < id.uri;
         }

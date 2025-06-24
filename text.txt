@@ -1,0 +1,209 @@
+\documentclass[12pt,a4paper]{article}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{geometry}
+\usepackage{minted}        % For code highlighting
+\usepackage{hyperref}      % Hyperlinks
+\usepackage{graphicx}      % Images
+\usepackage{caption}
+\usepackage{float}
+\usepackage{fancyhdr}
+\usepackage{amsmath,amssymb}
+\usepackage{hyperref}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+    pdftitle={Overleaf Example},
+    pdfpagemode=FullScreen,
+    }
+
+% Page settings
+\geometry{margin=2.5cm}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.7em}
+
+% Headers
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Code Documentation}
+\lhead{Project: Tesl LSP}
+\rfoot{\thepage}
+
+% Document start
+\begin{document}
+
+\begin{center}
+    {\LARGE \textbf{Base LSP implantation}} \\
+    \vspace{0.5em}
+    {\large Project: Test LSP} \\
+    {\large Author: Nikita Vetluzhskikh} \\
+    {\large Date: \today}
+\end{center}
+
+\section*{Introduction}
+GitHub repository \url{https://github.com/SyruSTR/-test_lsp}
+
+\section{Project Structure}
+Describe what files the project contains and their roles.
+
+
+\begin{itemize}
+    \item \texttt{CMakeLists.txt} — CMake build configuration
+    \item \texttt{external/} — third-party dependencies
+    \begin{itemize}
+        \item \texttt{json.hpp} — JSON for Modern C++
+        \item \texttt{test-VSCode-external-base} — client for testing
+    \end{itemize}
+    \item \texttt{LICENSE} — license file
+    \item \texttt{Logger/} — logging module
+    \begin{itemize}
+        \item \texttt{Logger.cpp} — logger implementation
+        \item \texttt{Logger.h} — logger interface
+    \end{itemize}
+    \item \texttt{main.cpp} — main source file
+    \item \texttt{Messages/} — message and protocol definitions
+    \begin{itemize}
+        \item \texttt{DictionaryWords.cpp, DictionaryWords.h} — dictionary handling
+        \item \texttt{Message.h} — base message structure
+        \item \texttt{NotificationMessage.h, RequestMessage.h, ResponseMessage.h} - types of messages
+        \item \texttt{ResponseResult.h} - base result structure
+        \item \texttt{Range.h} - a structure that points to a specific place in the text
+        \item \texttt{methods/} — method-related message headers
+        \begin{itemize}
+            \item \texttt{InitializeResult.h}
+            \item \texttt{ ServerInfo.h} - a structure that contains server information
+        \end{itemize}
+        \item \texttt{TextDocument/} — text document handling
+        \begin{itemize}
+            \item \texttt{Params/} — parameters for text document events
+            \begin{itemize}
+                \item \texttt{Params.h} - base params structure
+                \item \texttt{CompletionParams.h, DidChangeTextParams.h, DidOpenTextDocumentParams.h, DocumentDiagnosticParams.h}
+            \end{itemize}
+            \item \texttt{Result/} — result structures for responses
+            \begin{itemize}
+                \item \texttt{CompletionResult.h, FullDocumentDiagnosticReport.h}
+            \end{itemize}
+            \item \texttt{TextDocument.cpp, TextDocument.h}
+            \item \texttt{TextDocumentItem.h, TextDocumentSync.h, CompletionList.h, DiagnosticStruct.h} - structures from specification
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+
+\section{Dependencies}
+\begin{itemize}
+    \item Language: C++
+    \item OS: Ubuntu 24.04.2 LTS
+    \item Libraries: STL, nlohmann/json (C++ library for JSON)
+\end{itemize}
+
+\section{How it works}
+The client runs the Language Server Protocol. And sends the first request 'initialize'. If the client gets a response from the server (with server capabilities), the client will send NotificationRequest 'initialized'. This means that the connection is set up.
+
+Communication is provided by using standard input and output (stdin and stdout).
+stderr can be used for sending some information to client (for logging from client side)
+
+When some file is changed, the client sends responses \hyperref[completion]{textDocument/completion} (for completion word, if exists) and \hyperref[diagnostic]{textDocument/diagnostic} (for highlighting the problems).
+
+I use file '/usr/share/dict/words' as a dictionary to complete the words.
+
+\section{Released functions}
+\subsection{initialize}
+\label{initialize}
+It provides communication between client and server. The server responds to client, and tells what functions the server supports.
+Server sends "ServerCapabilities" and "ServerInfo".
+\subsubsection{ServerCapabilities}
+Server send
+
+CompletionProvider - that means what server supports words completion from some dictionary
+
+diagnosticProvider - that means what server can check tokens, and send Errors and Warnings, and indicates where the error has occurred.
+\begin{minted}[linenos,fontsize=\small]{json}
+{
+"id":0,
+"jsonrpc":"2.0",
+"result":{
+    "capabilities":{
+        "completionProvider":{},
+        "diagnosticProvider":{
+            "interFileDependencies":false,
+            "workspaceDiagnostics":false
+    },
+    "textDocumentSync":1 //FULL
+    },
+    "serverInfo":
+    {
+        "name":"my-lsp-server",
+        "version":"0.0.1"
+}}}
+\end{minted}
+
+\subsection{textDocument/completion}
+\label{completion}
+The server sends to the client words for completion. If the dictionary has more than 1000 possible results, the server sends only 1000 words and marked variable 'isIncomplete'
+
+\begin{minted}[linenos,fontsize=\small]{json}
+{
+//some json
+"isIncomplete" : true,
+//some json
+
+}
+\end{minted}
+\subsection{textDocument/didOpen}
+\label{didOpen}
+the client notifies the server that the new file was openned. The server saves the file path to itlesf structure.
+\subsection{textDocument/didChange}
+\label{didChange}
+The client notifies the server than the file was changed.
+\subsection{textDocument/diagnostic}
+\label{diagnostic}
+The client asks the server about problems in the files. And the server checks all words in the files, and sends the response with problems or notifies that file doesn't contains problems.
+
+% \section{Code Examples}
+
+% \subsection{main.cpp}
+% \begin{minted}[linenos,fontsize=\small]{cpp}
+% #include <iostream>
+% #include "utils.h"
+
+% int main() {
+%     std::cout << "Hello, world!" << std::endl;
+%     return 0;
+% }
+% \end{minted}
+
+% \subsection{utils.h}
+% \begin{minted}[linenos,fontsize=\small]{cpp}
+% #ifndef UTILS_H
+% #define UTILS_H
+
+% void print_hello();
+
+% #endif
+% \end{minted}
+
+% \section{Build and Run}
+% To build the project, use the following commands:
+
+% \begin{minted}[fontsize=\small]{bash}
+% g++ main.cpp utils.cpp -o my_program
+% ./my_program
+% \end{minted}
+
+\section{Run the project}
+Use the script 'start.sh'. This script starts VSCode.
+After that, use F5 to start the client application. The client will run the LSP in the background.
+\section{Debugging}
+For debugging the app. Launch the script './start.sh -d'. After use action 'attach to the process...'
+
+\section{Conclusion}
+For one week had been provided own LSP implantation with using standard input and output and had been implanted based functions from specification.
+
+\end{document}
