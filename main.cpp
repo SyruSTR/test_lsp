@@ -19,6 +19,8 @@ void waitForDebugger() {
 int main() {
 #ifdef DEBUG
     waitForDebugger();
+#else
+    std::cerr << "release mode" << std::endl;
 #endif
 
 
