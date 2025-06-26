@@ -1,0 +1,3 @@
+[submodule "external/VSCode-extension-base"]
+	path = external/VSCode-extension-base
+	url = https://github.com/SyruSTR/minimum-viable-vscode-language-server-extension.git
