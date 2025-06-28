@@ -1,3 +1,6 @@
 [submodule "external/VSCode-extension-base"]
 	path = external/VSCode-extension-base
 	url = https://github.com/SyruSTR/minimum-viable-vscode-language-server-extension.git
+[submodule "external/IFJ23-compiler"]
+	path = external/IFJ23-compiler
+	url = https://github.com/SyruSTR/ifj-2023_fork.git
