@@ -6,7 +6,7 @@
 #define INITIALIZERESULT_H
 #include "ServerInfo.h"
 #include "../../external/json.hpp"
-#include "../ResponseResult.h"
+#include "../TextDocument/Result/ResponseResult.h"
 
 namespace lsp_test {
 

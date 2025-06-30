@@ -4,7 +4,7 @@
 
 #ifndef RESPONCERESULT_H
 #define RESPONCERESULT_H
-#include "../external/json.hpp"
+#include "../../../external/json.hpp"
 
 namespace lsp_test {
 

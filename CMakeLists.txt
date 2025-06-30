@@ -20,7 +20,7 @@ set(SOURCE_FILES
         Messages/TextDocument/Params/DidChangeTextParams.h
         Messages/TextDocument/Params/CompletionParams.h
         Messages/TextDocument/Params/Params.h
-        Messages/ResponseResult.h
+        Messages/TextDocument/Result/ResponseResult.h
         Messages/TextDocument/Result/CompletionResult.h
         Messages/TextDocument/CompletionList.h
         Messages/TextDocument/Result/FullDocumentDiagnosticReport.h
