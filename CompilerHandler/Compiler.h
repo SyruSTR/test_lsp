@@ -14,7 +14,7 @@ public:
     Compiler(const std::string &compiler_log_path);
     ~Compiler();
 
-    void run(const std::string &checked_file);
+    void run(const std::string &checked_file) const;
 private:
     std::ofstream compiler_log;
     std::string compiler_log_path;

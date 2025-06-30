@@ -7,6 +7,9 @@
 #include <cstring>
 #include <iostream>
 #include <sys/wait.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 
 Compiler::Compiler(const std::string &compiler_log_path){
@@ -18,9 +21,10 @@ Compiler::~Compiler() {
 }
 
 
-void Compiler::run(const std::string &checked_file) {
+void Compiler::run(const std::string &checked_file) const {
     int pipe_stdin[2];
     int pipe_stderr[2];
+    int save_stdout = dup(STDOUT_FILENO);
 
     if (pipe(pipe_stdin) == -1 || pipe(pipe_stderr) == -1) {
         perror("pipe");
@@ -42,6 +46,11 @@ void Compiler::run(const std::string &checked_file) {
         dup2(pipe_stderr[1], STDERR_FILENO);
         close(pipe_stderr[0]);
         close(pipe_stderr[1]);
+
+        // redirect stdout to /dev/null
+        int devnull = open("/dev/null", O_WRONLY);
+        dup2(devnull, STDOUT_FILENO);
+        close(devnull);
 
         execl(compiler_path.c_str(), "compiler", "1>&2", NULL);
         perror("execl");
@@ -79,6 +88,10 @@ void Compiler::run(const std::string &checked_file) {
     close(pipe_stderr[0]);
 
     wait(nullptr); // Wait for child
+
+    // restore stdout
+    dup2(save_stdout, STDOUT_FILENO);
+    close(save_stdout);
 }
 
 
