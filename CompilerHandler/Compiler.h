@@ -15,11 +15,7 @@ public:
     ~Compiler();
 
     void run(const std::string &checked_file);
-    void stop();
 private:
-    std::thread worker_;
-    std::mutex mtx_;
-    std::atomic<pid_t> child_pid_{-1};
     std::ofstream compiler_log;
     std::string compiler_log_path;
     std::string compiler_path = "../external/IFJ23-compiler/compiler";
