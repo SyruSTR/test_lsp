@@ -45,6 +45,8 @@ namespace lsp_test {
 
         void shutdown(const nlohmann::json& j);
 
+        void exit(const nlohmann::json& j);
+
         void sendResponse(const nlohmann::json& response);
         std::vector<std::string> resplit(const std::string &s, const std::regex &sep_regex );
     };

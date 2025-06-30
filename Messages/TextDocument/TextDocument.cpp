@@ -62,13 +62,22 @@ namespace  lsp_test {
         else if (m_method == "shutdown") {
             shutdown(message);
         }
+        else if (m_method == "exit") {
+            exit(message);
+        }
     }
 
+    void TextDocument::exit(const nlohmann::json &j) {
+
+        //todo send error if get 'exit' before 'shutdown'
+        exit(0);
+    }
 
     void TextDocument::shutdown(const nlohmann::json& j) {
         int id = 0;
         GET_VALUE_FROM_JSON(id,"id",j,typeof(id));
 
+        //todo send error if request_method == 'exit'
         json response_json = Message();
         response_json["id"] = id;
         response_json["params"] = nullptr;
