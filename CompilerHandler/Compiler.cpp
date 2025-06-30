@@ -21,7 +21,7 @@ Compiler::~Compiler() {
 }
 
 
-nlohmann::json Compiler::run(const std::string &checked_file) const {
+std::string Compiler::run(const std::string &checked_file) const {
     int pipe_stdin[2];
     int pipe_stderr[2];
     int save_stdout = dup(STDOUT_FILENO);
@@ -85,7 +85,7 @@ nlohmann::json Compiler::run(const std::string &checked_file) const {
     ssize_t bytesRead;
     while ((bytesRead = read(pipe_stderr[0], &test_str_buff[0], test_str_buff.capacity() - 1)) > 0) {
         test_str_buff[bytesRead] = '\0';
-        full_stderr += test_str_buff;
+        full_stderr.append(test_str_buff, 0,bytesRead);
     }
 
     close(pipe_stderr[0]);
@@ -96,7 +96,7 @@ nlohmann::json Compiler::run(const std::string &checked_file) const {
     dup2(save_stdout, STDOUT_FILENO);
     close(save_stdout);
 
-    return nlohmann::json(full_stderr);
+    return full_stderr;
 }
 
 

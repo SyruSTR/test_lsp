@@ -7,14 +7,13 @@
 
 #include <fstream>
 #include <iosfwd>
-#include "../external/json.hpp"
 
 class Compiler {
 public:
     Compiler(const std::string &compiler_log_path);
     ~Compiler();
 
-    nlohmann::json run(const std::string &checked_file) const;
+    std::string run(const std::string &checked_file) const;
 private:
     std::ofstream compiler_log;
     std::string compiler_log_path;

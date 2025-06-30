@@ -64,7 +64,7 @@ namespace lsp_test {
     };
 
     struct compiler_output {
-        error_code error_code;
+        error_code error_code_;
         std::string error_message;
         int line;
         int char_position;
@@ -114,13 +114,12 @@ namespace lsp_test {
     };
 
     void inline from_json(const json& j, compiler_output& o) {
-        j.at("error_code").get_to(o.error_code);
-        j.at("error_message").get_to(o.error_message);
+        j.at("error_code").get_to(o.error_code_);
+        j.at("message").get_to(o.error_message);
         j.at("line").get_to(o.line);
-        j.at("char_position").get_to(o.char_position);
-        std::string token_string = o.get_token_string_representation(o.token_type_);
-        j.at("token_type").get_to(token_string);
-        j.at("token_content").get_to(o.token_content);
+        j.at("char_pos").get_to(o.char_position);
+        j.at("token_type").get_to(o.token_type_);
+        j.at("token_string").get_to(o.token_content);
     }
 }
 
