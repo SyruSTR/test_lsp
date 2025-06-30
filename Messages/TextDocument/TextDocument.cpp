@@ -59,8 +59,25 @@ namespace  lsp_test {
         else if (m_method == "textDocument/didOpen") {
             didOpen(message);
         }
+        else if (m_method == "shutdown") {
+            shutdown(message);
+        }
     }
 
+
+    void TextDocument::shutdown(const nlohmann::json& j) {
+        int id = 0;
+        GET_VALUE_FROM_JSON(id,"id",j,typeof(id));
+
+        json response_json = Message();
+        response_json["id"] = id;
+        response_json["params"] = nullptr;
+
+
+        m_logger->log(response_json.dump(), LogLevel::SERVER);
+        sendResponse(response_json);
+
+    }
 
     void TextDocument::completion(const nlohmann::json& j ) {
         int id = 0;
