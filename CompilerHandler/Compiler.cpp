@@ -21,7 +21,7 @@ Compiler::~Compiler() {
 }
 
 
-void Compiler::run(const std::string &checked_file) const {
+nlohmann::json Compiler::run(const std::string &checked_file) const {
     int pipe_stdin[2];
     int pipe_stderr[2];
     int save_stdout = dup(STDOUT_FILENO);
@@ -79,12 +79,15 @@ void Compiler::run(const std::string &checked_file) const {
     close(pipe_stdin[1]);  // EOF
 
     // Read from child stderr
-    std::string test_str_buff(1024,'\0');
+    std::string full_stderr;
+    const int bufferSize = 512;
+    std::string test_str_buff(bufferSize,'\0');
     ssize_t bytesRead;
     while ((bytesRead = read(pipe_stderr[0], &test_str_buff[0], test_str_buff.capacity() - 1)) > 0) {
         test_str_buff[bytesRead] = '\0';
-        printf("Received from child: %s", test_str_buff.c_str());
+        full_stderr += test_str_buff;
     }
+
     close(pipe_stderr[0]);
 
     wait(nullptr); // Wait for child
@@ -92,6 +95,8 @@ void Compiler::run(const std::string &checked_file) const {
     // restore stdout
     dup2(save_stdout, STDOUT_FILENO);
     close(save_stdout);
+
+    return nlohmann::json(full_stderr);
 }
 
 
