@@ -23,6 +23,13 @@
 
 namespace  lsp_test {
 
+    json get_message_without_params(int id) {
+        json j = Message();
+        j["id"] = id;
+        j["params"] = nullptr;
+        return j;
+    }
+
     TextDocument::TextDocument(std::string *currentLine): m_currentReadedLine(currentLine) {
         m_textDocuments.clear();
         // m_dictionary = std::make_unique<DictionaryWords>("/usr/share/dict/words");
@@ -79,10 +86,7 @@ namespace  lsp_test {
         GET_VALUE_FROM_JSON(id,"id",j,typeof(id));
 
         //todo send error if request_method == 'exit'
-        json response_json = Message();
-        response_json["id"] = id;
-        response_json["params"] = nullptr;
-
+        json response_json = get_message_without_params(id);
 
         m_logger->log(response_json.dump(), LogLevel::SERVER);
         sendResponse(response_json);
@@ -101,6 +105,8 @@ namespace  lsp_test {
         if (m_textDocuments.contains(request.params->textDocument.uri))
             content = m_textDocuments.at(request.params->textDocument.uri);
         else {
+            json response_json = get_message_without_params(id);
+            sendResponse(response_json);
             return;
         }
 
@@ -114,8 +120,12 @@ namespace  lsp_test {
             i++;
         }
 
-        if (currentLine.empty())
+        if (currentLine.empty()) {
+            json response_json = get_message_without_params(id);
+            sendResponse(response_json);
             return;
+        }
+
 
         std::string lineUntilCursor = currentLine.substr(0, request.params->position.character);
         // extracts word after the last non-word character in the line
@@ -147,6 +157,8 @@ namespace  lsp_test {
         if (m_textDocuments.contains(request.params->textDocument.uri))
             content = m_textDocuments.at(request.params->textDocument.uri);
         else {
+            json response_json = get_message_without_params(id);
+            sendResponse(response_json);
             return;
         }
 
