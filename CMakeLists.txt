@@ -5,6 +5,15 @@ project(-test_lsp)
 set(_DEBUG)
 set(CMAKE_CXX_STANDARD 20)
 
+set(test_compiler
+        CompilerHandler/test_launch.cpp
+        CompilerHandler/Compiler.cpp
+        CompilerHandler/Compiler.h
+        CompilerHandler/CompilerOutput.h
+)
+
+add_executable(test_comp ${test_compiler})
+
 set(SOURCE_FILES
         main.cpp
 
@@ -35,6 +44,7 @@ set(SOURCE_FILES
         Messages/TextDocument/TextDocumentItem.h
         CompilerHandler/Compiler.h
         CompilerHandler/Compiler.cpp
+        CompilerHandler/scope.h
 )
 option(DEBUGING "Enable debugging" OFF)
 
