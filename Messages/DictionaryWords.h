@@ -7,6 +7,7 @@
 #include <string>
 #include <unordered_set>
 #include "TextDocument/CompletionList.h"
+#include "TextDocument/CompletionList.h"
 
 
 class DictionaryWords {
@@ -21,8 +22,9 @@ public:
     void WrapToCompletionList(lsp_test::CompletionList &completionList, const std::string& starts_with) const;
 
 private:
-
+    void AddKeywords();
     std::unordered_set<std::string> dictionary;
+    std::map<std::string, lsp_test::CompletionItem> words;
 
 };
 
