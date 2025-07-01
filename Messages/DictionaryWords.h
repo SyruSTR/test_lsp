@@ -13,17 +13,18 @@
 class DictionaryWords {
 public:
     DictionaryWords();
-    DictionaryWords(const std::string& filepath);
+    // DictionaryWords(const std::string& filepath);
     ~DictionaryWords();
 
     bool Contains(const std::string& word) const;
-    void AddWordsFromFile(const std::string& filePath);
-    void WrapToCompletionList(lsp_test::CompletionList &completionList) const;
+    // void AddWordsFromFile(const std::string& filePath);
+    // void WrapToCompletionList(lsp_test::CompletionList &completionList) const;
     void WrapToCompletionList(lsp_test::CompletionList &completionList, const std::string& starts_with) const;
 
 private:
+    const uint32_t MAX_LIST_LENGTH = 1000;
     void AddKeywords();
-    std::unordered_set<std::string> dictionary;
+    // std::unordered_set<std::string> dictionary;
     std::map<std::string, lsp_test::CompletionItem> words;
 
 };

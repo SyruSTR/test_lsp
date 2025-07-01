@@ -49,7 +49,7 @@ namespace lsp_test {
     };
 
     inline void to_json(json &j, const CompletionItem &ci) {
-        j = {{"label", ci.label}};
+        j = {{"label", ci.label}, {"kind", ci.kind}};
     }
 
     struct CompletionList {

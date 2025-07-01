@@ -25,7 +25,8 @@ namespace  lsp_test {
 
     TextDocument::TextDocument(std::string *currentLine): m_currentReadedLine(currentLine) {
         m_textDocuments.clear();
-        m_dictionary = std::make_unique<DictionaryWords>("/usr/share/dict/words");
+        // m_dictionary = std::make_unique<DictionaryWords>("/usr/share/dict/words");
+        m_dictionary = std::make_unique<DictionaryWords>();
         m_logger = std::make_unique<Logger>("/tmp/lsp-log.txt");
     }
 

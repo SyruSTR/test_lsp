@@ -7,13 +7,15 @@
 #include <fstream>
 
 DictionaryWords::DictionaryWords() {
-    dictionary.clear();
+    words.clear();
+    AddKeywords();
+    // dictionary.clear();
 }
 
-DictionaryWords::DictionaryWords(const std::string &filepath) {
-    dictionary.clear();
-    AddWordsFromFile(filepath);
-}
+// DictionaryWords::DictionaryWords(const std::string &filepath) {
+//     // dictionary.clear();
+//     // AddWordsFromFile(filepath);
+// }
 
 
 DictionaryWords::~DictionaryWords() = default;
@@ -35,37 +37,62 @@ void DictionaryWords::AddKeywords() {
 }
 
 
-void DictionaryWords::AddWordsFromFile(const std::string& filePath) {
-    if (std::ifstream wordsFile(filePath); wordsFile.is_open()) {
-        std::string bufferLine;
-        while (wordsFile.good() && std::getline(wordsFile, bufferLine)) {
-            dictionary.insert(bufferLine);
-        }
-    }
-}
+// void DictionaryWords::AddWordsFromFile(const std::string& filePath) {
+//     if (std::ifstream wordsFile(filePath); wordsFile.is_open()) {
+//         std::string bufferLine;
+//         while (wordsFile.good() && std::getline(wordsFile, bufferLine)) {
+//             dictionary.insert(bufferLine);
+//         }
+//     }
+// }
 
-void DictionaryWords::WrapToCompletionList(lsp_test::CompletionList &completionList) const {
-    for (auto &word : dictionary) {
-        completionList.items.emplace_back(word);
-    }
-}
-
+// void DictionaryWords::WrapToCompletionList(lsp_test::CompletionList &completionList) const {
+//     for (auto &word : dictionary) {
+//         completionList.items.emplace_back(word);
+//     }
+// }
 
 void DictionaryWords::WrapToCompletionList(lsp_test::CompletionList &completionList, const std::string& starts_with) const {
 
-    std::vector<std::string> buffer;
-    std::ranges::copy_if(dictionary,std::back_inserter(buffer),
-                         [starts_with](const std::string& word) {
-                             return word.starts_with(starts_with);
+    std::map<std::string, lsp_test::CompletionItem> buffer;
+    // for (const auto &key: words | std::views::keys) {
+    //     if (key.starts_with(starts_with)) {
+    //
+    //     }
+    // }
+
+
+    std::ranges::copy_if(words,std::inserter(buffer,buffer.begin()),
+                         [starts_with](const auto& pair) {
+                             return pair.first.starts_with(starts_with);
                          });
 
     // cutting the buffer to 1000 elements
-    const auto it_end = buffer.size() > MAX_LENGTH ? buffer.begin()+MAX_LENGTH : buffer.end();
-    std::copy(buffer.begin(), it_end, std::back_inserter(completionList.items));
+    auto it_end = buffer.begin();
+    // // uint tmp = buffer.size();
+    std::advance(it_end,std::min(buffer.size(), static_cast<decltype(buffer.size())>(MAX_LIST_LENGTH)));
+    // // const auto it_end = buffer.size() > MAX_LENGTH ? buffer.begin() + MAX_LENGTH : buffer.end();
+    // std::copy(buffer.begin(), it_end, std::back_inserter(completionList.items));
+    for (const auto &val: buffer | std::views::values) {
+        completionList.items.push_back(val);
+    }
 }
+// void DictionaryWords::WrapToCompletionList(lsp_test::CompletionList &completionList, const std::string& starts_with) const {
+//
+//     std::vector<std::string> buffer;
+     // std::ranges::copy_if(dictionary,std::back_inserter(buffer),
+     //                      [starts_with](const std::string& word) {
+     //                          return word.starts_with(starts_with);
+     //                      });
+//
+//     // cutting the buffer to 1000 elements
+//     const auto it_end = buffer.size() > MAX_LENGTH ? buffer.begin()+MAX_LENGTH : buffer.end();
+//     std::copy(buffer.begin(), it_end, std::back_inserter(completionList.items));
+// }
 
 bool DictionaryWords::Contains(const std::string& word) const {
-    return dictionary.contains(word);
+    return words.contains(word);
+    // return dictionary.contains(word);
 }
 
 
