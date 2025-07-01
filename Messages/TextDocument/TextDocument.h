@@ -10,6 +10,7 @@
 #include "Params/DidChangeTextParams.h"
 #include "../../Logger/Logger.h"
 #include "../DictionaryWords.h"
+#include "../../CompilerHandler/Compiler.h"
 #include "Result/CompletionResult.h"
 
 
@@ -30,6 +31,7 @@ namespace lsp_test {
         std::map<std::string, std::string> m_textDocuments;
         std::unique_ptr<Logger> m_logger;
         std::shared_ptr<std::string> m_currentReadedLine;
+        std::unique_ptr<Compiler> m_compiler;
 
         std::string m_method;
 

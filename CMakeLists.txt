@@ -33,6 +33,8 @@ set(SOURCE_FILES
         Messages/TextDocument/TextDocument.h
         Messages/TextDocument/Params/DidOpenTextDocumentParams.h
         Messages/TextDocument/TextDocumentItem.h
+        CompilerHandler/Compiler.h
+        CompilerHandler/Compiler.cpp
 )
 option(DEBUGING "Enable debugging" OFF)
 

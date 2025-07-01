@@ -15,6 +15,7 @@
 #include "Params/DidOpenTextDocumentParams.h"
 #include "Params/DocumentDiagnosticParams.h"
 #include "Result/FullDocumentDiagnosticReport.h"
+#include "../CompilerHandler/CompilerOutput.h"
 
 #define GET_VALUE_FROM_JSON(variable, variable_name, json,variable_type) \
     if(json.contains(variable_name)) \
@@ -35,6 +36,7 @@ namespace  lsp_test {
         // m_dictionary = std::make_unique<DictionaryWords>("/usr/share/dict/words");
         m_dictionary = std::make_unique<DictionaryWords>();
         m_logger = std::make_unique<Logger>("/tmp/lsp-log.txt");
+        m_compiler = std::make_unique<Compiler>("/tmp/compiler_log.txt");
     }
 
     TextDocument::~TextDocument() {
@@ -163,44 +165,62 @@ namespace  lsp_test {
         }
 
         // get all words from current file
-        auto wordsInDocument = resplit(content.value(),std::regex("\\W"));
-        // split content for lines
-        auto lines = resplit(content.value(),std::regex("\n"));
-        //erase empty words
-        std::erase_if(wordsInDocument,
-                      [this](const std::string& line) {
-                          return line.empty();
-                      });
+        // auto wordsInDocument = resplit(content.value(),std::regex("\\W"));
+        // // split content for lines
+        // auto lines = resplit(content.value(),std::regex("\n"));
+        // //erase empty words
+        // std::erase_if(wordsInDocument,
+        //               [this](const std::string& line) {
+        //                   return line.empty();
+        //               });
 
         auto report = FullDocumentDiagnosticReport();
-
-        std::vector<std::string> invalidWords;
-
-        for (std::string& word : wordsInDocument) {
-            if (!m_dictionary->Contains(word)) {
-                // get word
-                // \b means empty space
-                std::regex pattern("\\b"+word+"\\b");
-                for (int i=0; i < lines.size(); i++) {
-                    //looking wrong word in lines
-                    auto matches = std::sregex_iterator(lines[i].begin(),lines[i].end(),pattern);
-                    auto matches_end = std::sregex_iterator();
-                    for (std::sregex_iterator match = matches; match != matches_end; ++match) {
-                        report.items.push_back({
-                            Diagnostic{
-                                Range{
-                                    Position(i,match->position()),
-                                    Position(i,match->position()+word.length()),
-                                },
-                                ERROR,
-                                word + " is not in our dictionary"
-                            }
-                        });
-                    }
+        std::string tmp_str = m_compiler->run(content.value());
+        if (!tmp_str.empty()) {
+            // json response_json = get_message_without_params(id);
+            // sendResponse(response_json);
+            compiler_output _comp_output = json::parse(tmp_str);
+            report.items.push_back({
+                Diagnostic{
+                    Range{
+                        Position(_comp_output.line,_comp_output.char_position),
+                        Position(_comp_output.line, _comp_output.char_position+3),
+                    },
+                    ERROR,
+                    _comp_output.error_message,
                 }
-            }
-
+            });
         }
+
+
+
+        // std::vector<std::string> invalidWords;
+        //
+        // for (std::string& word : wordsInDocument) {
+        //     if (!m_dictionary->Contains(word)) {
+        //         // get word
+        //         // \b means empty space
+        //         std::regex pattern("\\b"+word+"\\b");
+        //         for (int i=0; i < lines.size(); i++) {
+        //             //looking wrong word in lines
+        //             auto matches = std::sregex_iterator(lines[i].begin(),lines[i].end(),pattern);
+        //             auto matches_end = std::sregex_iterator();
+        //             for (std::sregex_iterator match = matches; match != matches_end; ++match) {
+        //                 report.items.push_back({
+        //                     Diagnostic{
+        //                         Range{
+        //                             Position(i,match->position()),
+        //                             Position(i,match->position()+word.length()),
+        //                         },
+        //                         ERROR,
+        //                         word + " is not in our dictionary"
+        //                     }
+        //                 });
+        //             }
+        //         }
+        //     }
+        //
+        // }
 
         //hardcode
         nlohmann::json json_response = Message();
