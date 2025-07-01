@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <sstream>
 
 
 Compiler::Compiler(const std::string &compiler_log_path){
@@ -21,7 +22,7 @@ Compiler::~Compiler() {
 }
 
 
-std::string Compiler::run(const std::string &checked_file) const {
+std::string Compiler::run(const std::string &file_content) const {
     int pipe_stdin[2];
     int pipe_stderr[2];
     int save_stdout = dup(STDOUT_FILENO);
@@ -62,10 +63,9 @@ std::string Compiler::run(const std::string &checked_file) const {
     close(pipe_stderr[1]);
 
     // Write to child
-    std::ifstream file(checked_file, std::ios::out);
+    std::stringstream str_stream(file_content);
     std::string line;
-
-    while (std::getline(file, line)) {
+    while (std::getline(str_stream, line)) {
         if (auto status = write(pipe_stdin[1], &line[0], line.size()); status == -1) {
             if (errno == EPIPE) {
                 std::cerr << "Child process closed stdin (EPIPE)\n";
