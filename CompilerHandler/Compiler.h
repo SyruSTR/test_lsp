@@ -13,7 +13,7 @@ public:
     Compiler(const std::string &compiler_log_path);
     ~Compiler();
 
-    std::string run(const std::string &checked_file) const;
+    std::string run(const std::string &file_content, bool debug = false) const;
 private:
     std::ofstream compiler_log;
     std::string compiler_log_path;

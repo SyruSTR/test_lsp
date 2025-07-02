@@ -176,6 +176,7 @@ namespace  lsp_test {
 
         auto report = FullDocumentDiagnosticReport();
         std::string tmp_str = m_compiler->run(content.value());
+        // std::string tmp_str = m_compiler->run(content.value(), true);
         if (!tmp_str.empty()) {
             // json response_json = get_message_without_params(id);
             // sendResponse(response_json);

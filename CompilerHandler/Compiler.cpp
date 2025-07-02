@@ -22,7 +22,7 @@ Compiler::~Compiler() {
 }
 
 
-std::string Compiler::run(const std::string &file_content) const {
+std::string Compiler::run(const std::string &file_content, bool debug) const {
     int pipe_stdin[2];
     int pipe_stderr[2];
     int save_stdout = dup(STDOUT_FILENO);
@@ -53,7 +53,7 @@ std::string Compiler::run(const std::string &file_content) const {
         dup2(devnull, STDOUT_FILENO);
         close(devnull);
 
-        execl(compiler_path.c_str(), "compiler", "1>&2", NULL);
+        execl(compiler_path.c_str(), "compiler",debug ? "-d" : "", "1>&2", NULL);
         perror("execl");
         exit(EXIT_FAILURE);
     }
