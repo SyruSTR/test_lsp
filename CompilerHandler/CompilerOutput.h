@@ -117,7 +117,9 @@ namespace lsp_test {
         j.at("error_code").get_to(o.error_code_);
         j.at("message").get_to(o.error_message);
         j.at("line").get_to(o.line);
+        o.line--;
         j.at("char_pos").get_to(o.char_position);
+        o.char_position--;
         j.at("token_type").get_to(o.token_type_);
         j.at("token_string").get_to(o.token_content);
     }

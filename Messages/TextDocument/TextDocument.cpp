@@ -185,7 +185,8 @@ namespace  lsp_test {
                 Diagnostic{
                     Range{
                         Position(_comp_output.line,_comp_output.char_position),
-                        Position(_comp_output.line, _comp_output.char_position+3),
+                        Position(_comp_output.line,
+                            _comp_output.char_position + (_comp_output.token_content == "null" ? 1 : _comp_output.token_content.length())),
                     },
                     ERROR,
                     _comp_output.error_message,
