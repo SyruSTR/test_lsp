@@ -22,9 +22,9 @@ DictionaryWords::~DictionaryWords() = default;
 
 void DictionaryWords::AddKeywords() {
     words.insert({
-        {"double", lsp_test::CompletionItem("double", lsp_test::Keyword)},
-        {"int", lsp_test::CompletionItem("int", lsp_test::Keyword)},
-        {"string", lsp_test::CompletionItem("string", lsp_test::Keyword)},
+        {"Double", lsp_test::CompletionItem("Double", lsp_test::Keyword)},
+        {"Int", lsp_test::CompletionItem("Int", lsp_test::Keyword)},
+        {"String", lsp_test::CompletionItem("String", lsp_test::Keyword)},
         {"var", lsp_test::CompletionItem("var", lsp_test::Keyword)},
         {"if", lsp_test::CompletionItem("if", lsp_test::Keyword)},
         {"else", lsp_test::CompletionItem("else", lsp_test::Keyword)},
