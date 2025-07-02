@@ -66,6 +66,8 @@ std::string Compiler::run(const std::string &file_content, bool debug) const {
     std::stringstream str_stream(file_content);
     std::string line;
     while (std::getline(str_stream, line)) {
+        // compiler needs a '\n'
+        line.append("\n");
         if (auto status = write(pipe_stdin[1], &line[0], line.size()); status == -1) {
             if (errno == EPIPE) {
                 std::cerr << "Child process closed stdin (EPIPE)\n";
