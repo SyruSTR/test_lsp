@@ -97,7 +97,7 @@ namespace lsp_test {
 
         /**
          *
-         * @return length of token, if can resolve from token_type, otherwise it will return -1
+         * @return length of token, if can resolve from token_type, otherwise it will return 0
          */
         int get_token_length() const {
             switch (this->type) {
@@ -129,7 +129,7 @@ namespace lsp_test {
                 case T_TERN:
                     return 2;
                 default:
-                    return -1;
+                    return 0;
             }
         }
 
