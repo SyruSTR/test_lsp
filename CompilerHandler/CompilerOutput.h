@@ -95,6 +95,44 @@ namespace lsp_test {
     struct TokenType {
         TokenTypeEnum type;
 
+        /**
+         *
+         * @return length of token, if can resolve from token_type, otherwise it will return -1
+         */
+        int get_token_length() const {
+            switch (this->type) {
+                case T_UNDERLINE:
+                case T_ASSIGMENT:
+                case T_MORE:
+                case T_LESS:
+                case T_MINUS:
+                case T_DIVISION:
+                case T_COLON:
+                case T_PLUS:
+                case T_EXCLAMATION_MARK:
+                case T_COMMA:
+                case T_CURVED_BRACKET_OPEN:
+                case T_CURVED_BRACKET_CLOSE:
+                case T_SQUARE_BRACKET_OPEN:
+                case T_SQUARE_BRACKET_CLOSE:
+                case T_BRACKET_OPEN:
+                case T_BRACKET_CLOSE:
+                case T_NEW_LINE:
+                case T_EOF:
+                case T_MULTIPLICATION:
+                    return 1;
+                case T_EQUALS:
+                case T_MORE_EQUAL:
+                case T_LESS_EQUAL:
+                case T_NOT_EQUAL:
+                case T_ARROW:
+                case T_TERN:
+                    return 2;
+                default:
+                    return -1;
+            }
+        }
+
         std::string get_token_string_representation() const {
             switch (this->type) {
                 case T_ITS_NOT_A_TOKEN: return "T_ITS_NOT_A_TOKEN";
