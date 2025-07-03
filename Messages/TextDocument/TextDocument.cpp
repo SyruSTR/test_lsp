@@ -180,16 +180,6 @@ namespace  lsp_test {
         if (!tmp_str.empty()) {
             // json response_json = get_message_without_params(id);
             // sendResponse(response_json);
-            compiler_output _comp_output = json::parse(tmp_str);
-            report.items.push_back({
-                Diagnostic{
-                    Range{
-                        Position(_comp_output.line,_comp_output.char_position),
-                        Position(_comp_output.line,
-                            _comp_output.char_position + (_comp_output.token_content == "null" ? 1 : _comp_output.token_content.length())),
-                    },
-                    ERROR,
-                    _comp_output.error_message,
             auto tmp_json = json::parse(tmp_str);
             CompilerOutput _comp_output = tmp_json;
 
@@ -214,10 +204,87 @@ namespace  lsp_test {
                          _comp_output.message.value_or("Without message")
                      );
             }
-                }
-            });
-        }
+            else {
+                switch (_comp_output.error_code) {
+                    case ER_NONE:
+                        break;
+                    case ER_LEX:
+                        break;
+                    case ER_SYNTAX: {
+                        if (_comp_output.token.has_value()) {
+                            int token_length = _comp_output.token.value().token_type.get_token_length();
 
+                            report.items.emplace_back(
+                             Range{
+                                 Position(_comp_output.line.value_or(0),_comp_output.char_pos.value_or(1)),
+                                 Position(_comp_output.line.value_or(0),_comp_output.char_pos.value_or(1) + token_length),
+                             },
+                             ERROR,
+                             _comp_output.message.value_or("Without message") + _comp_output.token->token_type.get_token_string_representation()
+                             );
+                        }
+                        break;
+                    }
+                    case ER_UNDEF_FUNC_OR_REDEF_VAR:
+                        break;
+                    case ER_PARAMS:
+                        break;
+                    case ER_UNDEF_VAR_OR_NOTINIT_VAR:
+                        {
+                        int var_length = _comp_output.variable_name.value().length();
+
+                        // if (token_length == 0 ) {
+
+                        //
+                        //     std::regex pattern("\\b\\b");
+
+                        //     // auto matches = std::sregex_iterator(current_line->rbegin(),current_line->rend(),pattern);
+                        //
+                        //     token_length = static_cast<int>(current_line->rfind(" ",0,current_line->size()-1));
+                        // }
+                        std::vector<std::string> lines = resplit(content.value(),std::regex("\n"));
+                        auto current_line = lines.begin()+_comp_output.line.value();
+
+                        int whitespaces_count = 0;
+                        for (auto it = current_line->begin(); it != current_line->begin()+_comp_output.char_pos.value(); ++it ) {
+                            if (std::isspace(*it)) {
+                                whitespaces_count++;
+                            }
+                        }
+
+                        std::string var_name =
+                            current_line->substr(
+                                std::max(_comp_output.char_pos.value_or(1) - var_length - whitespaces_count, 0),
+                                std::min(_comp_output.char_pos.value_or(1) - whitespaces_count,static_cast<int>(current_line->length())));
+                        std::string message = "Variable: " + var_name + " Undefined or non initialize";
+
+                        report.items.emplace_back(
+                        Range{
+                             Position(_comp_output.line.value_or(0),_comp_output.char_pos.value_or(1) - var_length - whitespaces_count),
+                             Position(_comp_output.line.value_or(0),_comp_output.char_pos.value_or(1) - whitespaces_count),
+                        },
+                        ERROR,
+                        message
+                        );
+                        break;
+                        }
+                    case ER_FUNC_RETURN:
+                        break;
+                    case ER_TYPE_COMP:
+                        break;
+                    case ER_INFERENCE:
+                        break;
+                    case ER_OTHER_SEM:
+                        break;
+                    case ER_PARAMS_ARGS_MISMATCH:
+                        break;
+                    case ER_PARAMS_TYPE_MISMATCH:
+                        break;
+                    case ER_INTERNAL:
+                        break;
+                }
+            }
+        }
 
 
         // std::vector<std::string> invalidWords;
