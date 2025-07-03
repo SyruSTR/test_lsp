@@ -3,7 +3,7 @@
 set -e
 
 PROJECT_DIR="$(pwd)"
-BUILD_DIR="$PROJECT_DIR/cmake-build-debug"
+BUILD_DIR="$PROJECT_DIR/cmake-build-release"
 EXT_DIR="$PROJECT_DIR/external/test-VSCode-external-base"
 CLIENT_DIR="$EXT_DIR/client"
 
