@@ -217,6 +217,7 @@ namespace lsp_test {
         std::optional<ItemType> actual_type;
         std::optional<std::string> variable_name;
         std::optional<bool> is_function;
+        std::optional<bool> is_it_assigment;
     };
 
     inline void from_json(const json& j, CompilerOutput& output) {
@@ -240,6 +241,7 @@ namespace lsp_test {
         if (j.contains("actual_type")) output.actual_type = j.at("actual_type").get<ItemType>();
         if (j.contains("variable_name")) output.variable_name = j.at("variable_name").get<std::string>();
         if (j.contains("is_function")) output.is_function = j.at("is_function").get<bool>();
+        if (j.contains("is_it_assigment")) output.is_it_assigment = j.at("is_it_assigment").get<bool>();
     }
 }
 

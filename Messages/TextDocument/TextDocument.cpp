@@ -231,37 +231,37 @@ namespace  lsp_test {
                         break;
                     case ER_UNDEF_VAR_OR_NOTINIT_VAR:
                         {
-                        int var_length = _comp_output.variable_name.value().length();
+                        std::string var_name = _comp_output.variable_name.value();
+                        int var_length = var_name.length();
 
-                        // if (token_length == 0 ) {
-
-                        //
-                        //     std::regex pattern("\\b\\b");
-
-                        //     // auto matches = std::sregex_iterator(current_line->rbegin(),current_line->rend(),pattern);
-                        //
-                        //     token_length = static_cast<int>(current_line->rfind(" ",0,current_line->size()-1));
-                        // }
                         std::vector<std::string> lines = resplit(content.value(),std::regex("\n"));
                         auto current_line = lines.begin()+_comp_output.line.value();
 
-                        int whitespaces_count = 0;
-                        for (auto it = current_line->begin(); it != current_line->begin()+_comp_output.char_pos.value(); ++it ) {
-                            if (std::isspace(*it)) {
-                                whitespaces_count++;
+                        int start = 0;
+                        int end = 0;
+                        if (_comp_output.is_it_assigment.value()) {
+                            start = _comp_output.char_pos.value_or(1);
+                            end = start + var_length;
+                        }
+                        else {
+                            start = std::max(_comp_output.char_pos.value_or(1) - var_length, 0);
+                            end = std::min(_comp_output.char_pos.value_or(1),static_cast<int>(current_line->length()));
+                            int whitespaces_count = 0;
+                            for (auto it = current_line->begin() + static_cast<int>(current_line->find(var_name)); it != current_line->begin()+end; ++it ) {
+                                if (std::isspace(*it)) {
+                                    whitespaces_count++;
+                                }
                             }
+                            start -= whitespaces_count;
+                            end -= whitespaces_count;
                         }
 
-                        std::string var_name =
-                            current_line->substr(
-                                std::max(_comp_output.char_pos.value_or(1) - var_length - whitespaces_count, 0),
-                                std::min(_comp_output.char_pos.value_or(1) - whitespaces_count,static_cast<int>(current_line->length())));
                         std::string message = "Variable: " + var_name + " Undefined or non initialize";
 
                         report.items.emplace_back(
                         Range{
-                             Position(_comp_output.line.value_or(0),_comp_output.char_pos.value_or(1) - var_length - whitespaces_count),
-                             Position(_comp_output.line.value_or(0),_comp_output.char_pos.value_or(1) - whitespaces_count),
+                             Position(_comp_output.line.value_or(0),start),
+                             Position(_comp_output.line.value_or(0),end),
                         },
                         ERROR,
                         message
