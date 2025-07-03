@@ -9,9 +9,14 @@
 
 namespace lsp_test {
 
+    using json = nlohmann::json;
+
     struct Position {
         int64_t line;
         int64_t character;
+
+        Position() : line(0), character(0) {}
+        Position(const int64_t _line, const int64_t _character) : line(_line), character(_character) {}
     };
 
     void inline from_json(const json& j, Position& pos) {
@@ -37,6 +42,10 @@ namespace lsp_test {
     struct CompletionParams : TextDocumentPositionParams {
 
     };
+
+    void inline from_json(const json& j, CompletionParams& params) {
+        from_json(j, static_cast<TextDocumentPositionParams&>(params));
+    }
 
 }
 

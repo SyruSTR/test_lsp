@@ -10,7 +10,7 @@ namespace lsp_test {
 
     using json = nlohmann::json;
 
-    enum error_code{
+    enum ErrorCode{
         ER_NONE          = 0,
         ER_LEX           = 1,
         ER_SYNTAX        = 2,
@@ -21,10 +21,39 @@ namespace lsp_test {
         ER_TYPE_COMP     = 7,
         ER_INFERENCE     = 8,
         ER_OTHER_SEM       = 9,
+        ER_PARAMS_ARGS_MISMATCH = 40, // for LSP
+        ER_PARAMS_TYPE_MISMATCH = 41, // for LSP
         ER_INTERNAL      = 99
     };
 
-    enum token_type{
+    NLOHMANN_JSON_SERIALIZE_ENUM(ErrorCode, {
+        {ER_NONE, 0},
+        {ER_LEX, 1},
+        {ER_SYNTAX, 2},
+        {ER_UNDEF_FUNC_OR_REDEF_VAR, 3},
+        {ER_PARAMS, 4},
+        {ER_UNDEF_VAR_OR_NOTINIT_VAR, 5},
+        {ER_FUNC_RETURN, 6},
+        {ER_TYPE_COMP, 7},
+        {ER_INFERENCE, 8},
+        {ER_OTHER_SEM, 9},
+        {ER_PARAMS_ARGS_MISMATCH, 40},
+        {ER_PARAMS_TYPE_MISMATCH, 41},
+        {ER_INTERNAL, 99}
+    })
+
+    enum ItemType {
+        IT_DOUBLE,
+        IT_INT,
+        IT_STRING,
+        IT_ANY,
+        IT_NIL,
+        IT_UNDEF,
+        IT_BOOL,
+        IT_NOT_NIL // for LSP
+    };
+
+    enum TokenTypeEnum {
         T_ITS_NOT_A_TOKEN,
         T_EXPONENT,
         T_DECIMAL,
@@ -63,16 +92,11 @@ namespace lsp_test {
         T_MULTIPLICATION
     };
 
-    struct compiler_output {
-        error_code error_code_;
-        std::string error_message;
-        int line;
-        int char_position;
-        token_type token_type_;
-        std::string token_content;
+    struct TokenType {
+        TokenTypeEnum type;
 
-        std::string get_token_string_representation(const token_type &token) {
-            switch (token) {
+        std::string get_token_string_representation() const {
+            switch (this->type) {
                 case T_ITS_NOT_A_TOKEN: return "T_ITS_NOT_A_TOKEN";
                 case T_EXPONENT: return "T_EXPONENT";
                 case T_DECIMAL: return "T_DECIMAL";
@@ -113,15 +137,71 @@ namespace lsp_test {
         }
     };
 
-    void inline from_json(const json& j, compiler_output& o) {
-        j.at("error_code").get_to(o.error_code_);
-        j.at("message").get_to(o.error_message);
-        j.at("line").get_to(o.line);
-        o.line--;
-        j.at("char_pos").get_to(o.char_position);
-        o.char_position--;
-        j.at("token_type").get_to(o.token_type_);
-        j.at("token_string").get_to(o.token_content);
+    inline void from_json(const nlohmann::json &j, TokenType &t) {
+        t.type = j.get<TokenTypeEnum>();
+        // j.at("token_type").get_to(t.type);
+    }
+
+    struct ErrorBase {
+        ErrorCode error_code;
+        std::optional<std::string> message;
+    };
+
+    inline void from_json(const json& j, ErrorBase& eb) {
+        j.at("error_code").get_to(eb.error_code);
+        // eb.error_code = j.at("error_code").get<ErrorCode>();
+        if (j.contains("message")) eb.message = j.at("message").get<std::string>();
+    }
+
+    struct TokenInfo {
+        TokenType token_type;
+        std::string token_string;
+    };
+
+    inline void from_json(const json& j, TokenInfo& t) {
+        from_json(j, t.token_type);
+        j.at("token_type").get_to(t.token_type);
+        j.at("token_string").get_to(t.token_string);
+    }
+
+    struct CompilerOutput : ErrorBase {
+        std::optional<int> line;
+        std::optional<int> char_pos;
+        std::optional<TokenInfo> token;
+        std::optional<TokenType> verified_token_type;
+        std::optional<std::string> token_content;
+        std::optional<std::string> function_name;
+        std::optional<int> expected_func_args;
+        std::optional<int> actual_func_args;
+        std::optional<ItemType> expected_param_type;
+        std::optional<ItemType> actual_param_type;
+        std::optional<ItemType> expected_type;
+        std::optional<ItemType> actual_type;
+        std::optional<std::string> variable_name;
+        std::optional<bool> is_function;
+    };
+
+    inline void from_json(const json& j, CompilerOutput& output) {
+        from_json(j, static_cast<ErrorBase &>(output));
+        if (j.contains("line")) {
+            output.line = j.at("line").get<int>() - 1;
+        }
+        if (j.contains("char_pos")) {
+            output.char_pos = j.at("char_pos").get<int>() - 1;
+        }
+        if (j.contains("token_type") && j.contains("token_string"))
+            output.token = TokenInfo{j.at("token_type"), j.at("token_string")};
+        if (j.contains("verified_token_type")) output.verified_token_type = j.at("verified_token_type").get<TokenType>();
+        if (j.contains("token_string")) output.token_content = j.at("token_string").get<std::string>();
+        if (j.contains("function_name")) output.function_name = j.at("function_name").get<std::string>();
+        if (j.contains("expected_func_args")) output.expected_func_args = j.at("expected_func_args").get<int>();
+        if (j.contains("actual_func_args")) output.actual_func_args = j.at("actual_func_args").get<int>();
+        if (j.contains("expected_param_type")) output.expected_param_type = j.at("expected_param_type").get<ItemType>();
+        if (j.contains("actual_param_type")) output.actual_param_type = j.at("actual_param_type").get<ItemType>();
+        if (j.contains("expected_type")) output.expected_type = j.at("expected_type").get<ItemType>();
+        if (j.contains("actual_type")) output.actual_type = j.at("actual_type").get<ItemType>();
+        if (j.contains("variable_name")) output.variable_name = j.at("variable_name").get<std::string>();
+        if (j.contains("is_function")) output.is_function = j.at("is_function").get<bool>();
     }
 }
 
