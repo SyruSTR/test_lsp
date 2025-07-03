@@ -143,7 +143,7 @@ namespace lsp_test {
                 case T_ASSIGMENT: return "T_ASSIGMENT";
                 case T_UNDERLINE: return "T_UNDERLINE";
                 case T_KEYWORD: return "T_KEYWORD";
-                case T_ID: return "T_ID";
+                case T_ID: return "T_IDENTIFIER";
                 case T_KEYWORD_NIL_POSSIBILITY: return "T_KEYWORD_NIL_POSSIBILITY";
                 case T_EXCLAMATION_MARK: return "T_EXCLAMATION_MARK";
                 case T_STRING: return "T_STRING";
@@ -153,7 +153,7 @@ namespace lsp_test {
                 case T_LESS_EQUAL: return "T_LESS_EQUAL";
                 case T_MINUS: return "T_MINUS";
                 case T_ARROW: return "T_ARROW";
-                case T_TERN: return "T_TERN";
+                case T_TERN: return "T_TERNARY";
                 case T_COMMENT_STRING: return "T_COMMENT_STRING";
                 case T_COMMENT_BLOCK: return "T_COMMENT_BLOCK";
                 case T_NOT_EQUAL: return "T_NOT_EQUAL";
@@ -168,7 +168,7 @@ namespace lsp_test {
                 case T_BRACKET_OPEN: return "T_BRACKET_OPEN";
                 case T_BRACKET_CLOSE: return "T_BRACKET_CLOSE";
                 case T_NEW_LINE: return "T_NEW_LINE";
-                case T_EOF: return "T_EOF";
+                case T_EOF: return "T_End_Of_File(EOF)";
                 case T_MULTIPLICATION: return "T_MULTIPLICATION";
                 default: return "UNKNOWN_TOKEN";
             }
