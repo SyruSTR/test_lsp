@@ -190,6 +190,30 @@ namespace  lsp_test {
                     },
                     ERROR,
                     _comp_output.error_message,
+            auto tmp_json = json::parse(tmp_str);
+            CompilerOutput _comp_output = tmp_json;
+
+ //            report.items.push_back({
+ //     Diagnostic{
+ //         Range{
+ //             Position(_comp_output.line.value(),_comp_output.char_pos.value()),
+ //             Position(_comp_output.line.value(),
+ //                      _comp_output.char_pos.value() + (_comp_output.token_content.has_value() ? _comp_output.token_content.value().length() : 1 )),
+ //         },
+ //         ERROR,
+ //         _comp_output.message.value(),
+ //     }
+ // });
+            if (_comp_output.message.has_value() && _comp_output.message.value() == "Unresolved error") {
+                report.items.emplace_back(
+                         Range{
+                             Position(_comp_output.line.value_or(1),_comp_output.char_pos.value_or(1)),
+                             Position(_comp_output.line.value_or(1),_comp_output.char_pos.value_or(1)),
+                         },
+                         ERROR,
+                         _comp_output.message.value_or("Without message")
+                     );
+            }
                 }
             });
         }
