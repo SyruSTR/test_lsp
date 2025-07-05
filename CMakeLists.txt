@@ -5,6 +5,13 @@ project(-test_lsp)
 set(_DEBUG)
 set(CMAKE_CXX_STANDARD 20)
 
+set(TEST_COMPILER
+        CompilerHandler/test_launch.cpp
+        CompilerHandler/Compiler.h
+        CompilerHandler/Compiler.cpp
+)
+add_executable(compiler-test ${TEST_COMPILER})
+
 set(SOURCE_FILES
         main.cpp
 
