@@ -205,6 +205,10 @@ namespace  lsp_test {
                      );
             }
             else {
+                std::vector<std::string> lines = resplit(content.value(),std::regex("\n"));
+                __gnu_cxx::__normal_iterator<std::string *, std::vector<std::string>> current_line;
+                if (_comp_output.line.has_value())
+                    current_line = lines.begin()+_comp_output.line.value();
                 switch (_comp_output.error_code) {
                     case ER_NONE:
                         break;
@@ -234,8 +238,8 @@ namespace  lsp_test {
                         std::string var_name = _comp_output.variable_name.value();
                         int var_length = var_name.length();
 
-                        std::vector<std::string> lines = resplit(content.value(),std::regex("\n"));
-                        auto current_line = lines.begin()+_comp_output.line.value();
+                        // std::vector<std::string> lines = resplit(content.value(),std::regex("\n"));
+                        // auto current_line = lines.begin()+_comp_output.line.value();
 
                         int start = 0;
                         int end = 0;
@@ -281,6 +285,14 @@ namespace  lsp_test {
                     case ER_PARAMS_TYPE_MISMATCH:
                         break;
                     case ER_INTERNAL:
+                        report.items.emplace_back(
+                            Range{
+                                Position(0,0),
+                                Position(lines.capacity(),lines.end()->capacity())
+                            },
+                            ERROR,
+                            _comp_output.message.value_or("Without message")
+                            );
                         break;
                 }
             }
