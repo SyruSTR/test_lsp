@@ -180,103 +180,104 @@ namespace  lsp_test {
         if (!tmp_str.empty()) {
             // json response_json = get_message_without_params(id);
             // sendResponse(response_json);
-            auto tmp_json = json::parse(tmp_str);
-            CompilerOutput _comp_output = tmp_json;
+            try {
+                auto tmp_json = json::parse(tmp_str);
+                CompilerOutput _comp_output = tmp_json;
 
- //            report.items.push_back({
- //     Diagnostic{
- //         Range{
- //             Position(_comp_output.line.value(),_comp_output.char_pos.value()),
- //             Position(_comp_output.line.value(),
- //                      _comp_output.char_pos.value() + (_comp_output.token_content.has_value() ? _comp_output.token_content.value().length() : 1 )),
- //         },
- //         ERROR,
- //         _comp_output.message.value(),
- //     }
- // });
-            std::string message_buffer = _comp_output.message.value_or("Without message: ");
-            if (_comp_output.message.has_value() && _comp_output.message.value() == "Unresolved error") {
-                report.items.emplace_back(
-                         Range{
-                             Position(_comp_output.line.value_or(1),_comp_output.char_pos.value_or(1)),
-                             Position(_comp_output.line.value_or(1),_comp_output.char_pos.value_or(1)),
-                         },
-                         ERROR,
-                         "Unresolved error"
-                     );
-            }
-            else {
-                Range range_buffer;
-                std::vector<std::string> lines = resplit(content.value(),std::regex("\n"));
-                __gnu_cxx::__normal_iterator<std::string *, std::vector<std::string>> current_line;
-                if (_comp_output.line.has_value())
-                    current_line = lines.begin()+_comp_output.line.value();
-                switch (_comp_output.error_code) {
-                    case ER_NONE:
-                        break;
-                    case ER_LEX:
-                        message_buffer = _comp_output.message.value_or("Without message: ");
-                        range_buffer.start = Position(_comp_output.line.value_or(1),_comp_output.char_pos.value_or(1));
-                        range_buffer.end = range_buffer.start;
-                        range_buffer.end.character++;
-                        break;
-                    case ER_SYNTAX: {
-                        if (_comp_output.token.has_value()) {
-                            int token_length = _comp_output.token.value().token_type.get_token_length();
+     //            report.items.push_back({
+     //     Diagnostic{
+     //         Range{
+     //             Position(_comp_output.line.value(),_comp_output.char_pos.value()),
+     //             Position(_comp_output.line.value(),
+     //                      _comp_output.char_pos.value() + (_comp_output.token_content.has_value() ? _comp_output.token_content.value().length() : 1 )),
+     //         },
+     //         ERROR,
+     //         _comp_output.message.value(),
+     //     }
+     // });
+                std::string message_buffer = _comp_output.message.value_or("Without message: ");
+                if (_comp_output.message.has_value() && _comp_output.message.value() == "Unresolved error") {
+                    report.items.emplace_back(
+                             Range{
+                                 Position(_comp_output.line.value_or(1),_comp_output.char_pos.value_or(1)),
+                                 Position(_comp_output.line.value_or(1),_comp_output.char_pos.value_or(1)),
+                             },
+                             ERROR,
+                             "Unresolved error"
+                         );
+                }
+                else {
+                    Range range_buffer;
+                    std::vector<std::string> lines = resplit(content.value(),std::regex("\n"));
+                    __gnu_cxx::__normal_iterator<std::string *, std::vector<std::string>> current_line;
+                    if (_comp_output.line.has_value())
+                        current_line = lines.begin()+_comp_output.line.value();
+                    switch (_comp_output.error_code) {
+                        case ER_NONE:
+                            break;
+                        case ER_LEX:
+                            message_buffer = _comp_output.message.value_or("Without message: ");
+                            range_buffer.start = Position(_comp_output.line.value_or(1),_comp_output.char_pos.value_or(1));
+                            range_buffer.end = range_buffer.start;
+                            range_buffer.end.character++;
+                            break;
+                        case ER_SYNTAX: {
+                            if (_comp_output.token.has_value()) {
+                                int token_length = _comp_output.token.value().token_type.get_token_length();
 
-                            range_buffer.start = Position(_comp_output.line.value_or(0),_comp_output.char_pos.value_or(1));
-                            range_buffer.end = Position(_comp_output.line.value_or(0),_comp_output.char_pos.value_or(1) + token_length);
+                                range_buffer.start = Position(_comp_output.line.value_or(0),_comp_output.char_pos.value_or(1));
+                                range_buffer.end = Position(_comp_output.line.value_or(0),_comp_output.char_pos.value_or(1) + token_length);
 
-                            if (_comp_output.token.has_value())
-                                message_buffer += _comp_output.token->token_type.get_token_string_representation();
+                                if (_comp_output.token.has_value())
+                                    message_buffer += _comp_output.token->token_type.get_token_string_representation();
 
-                            // report.items.emplace_back(
-                            //  Range{
-                            //      Position(_comp_output.line.value_or(0),_comp_output.char_pos.value_or(1)),
-                            //      Position(_comp_output.line.value_or(0),_comp_output.char_pos.value_or(1) + token_length),
-                            //  },
-                            //  ERROR,
-                            //  _comp_output.message.value_or("Without message") + _comp_output.token->token_type.get_token_string_representation()
-                            //  );
+                                // report.items.emplace_back(
+                                //  Range{
+                                //      Position(_comp_output.line.value_or(0),_comp_output.char_pos.value_or(1)),
+                                //      Position(_comp_output.line.value_or(0),_comp_output.char_pos.value_or(1) + token_length),
+                                //  },
+                                //  ERROR,
+                                //  _comp_output.message.value_or("Without message") + _comp_output.token->token_type.get_token_string_representation()
+                                //  );
+                            }
+                            break;
                         }
-                        break;
-                    }
-                    case ER_UNDEF_FUNC_OR_REDEF_VAR:
-                        break;
-                    case ER_PARAMS:
-                        break;
-                    case ER_UNDEF_VAR_OR_NOTINIT_VAR:
-                        {
-                        std::string var_name = _comp_output.variable_name.value();
-                        int var_length = var_name.length();
+                        case ER_UNDEF_FUNC_OR_REDEF_VAR:
+                            break;
+                        case ER_PARAMS:
+                            break;
+                        case ER_UNDEF_VAR_OR_NOTINIT_VAR:
+                            {
+                            std::string var_name = _comp_output.variable_name.value();
+                            int var_length = var_name.length();
 
                         // std::vector<std::string> lines = resplit(content.value(),std::regex("\n"));
                         // auto current_line = lines.begin()+_comp_output.line.value();
 
-                        int start = 0;
-                        int end = 0;
-                        if (_comp_output.is_it_assigment.value()) {
-                            start = _comp_output.char_pos.value_or(1);
-                            end = start + var_length;
-                        }
-                        else {
-                            start = std::max(_comp_output.char_pos.value_or(1) - var_length, 0);
-                            end = std::min(_comp_output.char_pos.value_or(1),static_cast<int>(current_line->length()));
-                            int whitespaces_count = 0;
-                            for (auto it = current_line->begin() + static_cast<int>(current_line->find(var_name)); it != current_line->begin()+end; ++it ) {
-                                if (std::isspace(*it)) {
-                                    whitespaces_count++;
-                                }
+                            int start = 0;
+                            int end = 0;
+                            if (_comp_output.is_it_assigment.value()) {
+                                start = _comp_output.char_pos.value_or(1);
+                                end = start + var_length;
                             }
-                            start -= whitespaces_count;
-                            end -= whitespaces_count;
-                        }
+                            else {
+                                start = std::max(_comp_output.char_pos.value_or(1) - var_length, 0);
+                                end = std::min(_comp_output.char_pos.value_or(1),static_cast<int>(current_line->length()));
+                                int whitespaces_count = 0;
+                                for (auto it = current_line->begin() + static_cast<int>(current_line->find(var_name)); it != current_line->begin()+end; ++it ) {
+                                    if (std::isspace(*it)) {
+                                        whitespaces_count++;
+                                    }
+                                }
+                                start -= whitespaces_count;
+                                end -= whitespaces_count;
+                            }
 
-                        range_buffer.start = Position(_comp_output.line.value_or(0), start);
-                        range_buffer.end = Position(_comp_output.line.value_or(0), end);
+                            range_buffer.start = Position(_comp_output.line.value_or(0), start);
+                            range_buffer.end = Position(_comp_output.line.value_or(0), end);
 
-                        message_buffer = "Variable: " + var_name + " Undefined or non initialize";
-                        // std::string message = "Variable: " + var_name + " Undefined or non initialize";
+                            message_buffer = "Variable: " + var_name + " Undefined or non initialize";
+                            // std::string message = "Variable: " + var_name + " Undefined or non initialize";
 
                         // report.items.emplace_back(
                         // Range{
@@ -317,6 +318,33 @@ namespace  lsp_test {
                     range_buffer,
                     ERROR,
                     message_buffer);
+                            break;
+                            }
+                        case ER_FUNC_RETURN:
+                            break;
+                        case ER_TYPE_COMP:
+                            break;
+                        case ER_INFERENCE: {
+                            auto first_whitespace = current_line->rfind(" ",0,current_line->length());
+                            report.items.emplace_back(
+                            Range{
+                                Position(_comp_output.line.value_or(0),_comp_output.char_pos.value_or(1)-first_whitespace),
+                                Position(_comp_output.line.value_or(0),_comp_output.char_pos.value_or(1)),
+                            },
+                            ERROR,
+                            _comp_output.message.value_or("Without message") + _comp_output.token->token_type.get_token_string_representation()
+                            );
+                            break;
+                        }
+                        case ER_OTHER_SEM:
+                            break;
+                        case ER_PARAMS_ARGS_MISMATCH:
+                            break;
+                        case ER_PARAMS_TYPE_MISMATCH:
+                            break;
+            }
+            catch (json::parse_error& e) {
+                std::cerr << e.what() << std::endl;
             }
         }
 
