@@ -194,6 +194,7 @@ namespace  lsp_test {
  //         _comp_output.message.value(),
  //     }
  // });
+            std::string message_buffer = _comp_output.message.value_or("Without message: ");
             if (_comp_output.message.has_value() && _comp_output.message.value() == "Unresolved error") {
                 report.items.emplace_back(
                          Range{
@@ -201,10 +202,11 @@ namespace  lsp_test {
                              Position(_comp_output.line.value_or(1),_comp_output.char_pos.value_or(1)),
                          },
                          ERROR,
-                         _comp_output.message.value_or("Without message")
+                         "Unresolved error"
                      );
             }
             else {
+                Range range_buffer;
                 std::vector<std::string> lines = resplit(content.value(),std::regex("\n"));
                 __gnu_cxx::__normal_iterator<std::string *, std::vector<std::string>> current_line;
                 if (_comp_output.line.has_value())
@@ -218,14 +220,20 @@ namespace  lsp_test {
                         if (_comp_output.token.has_value()) {
                             int token_length = _comp_output.token.value().token_type.get_token_length();
 
-                            report.items.emplace_back(
-                             Range{
-                                 Position(_comp_output.line.value_or(0),_comp_output.char_pos.value_or(1)),
-                                 Position(_comp_output.line.value_or(0),_comp_output.char_pos.value_or(1) + token_length),
-                             },
-                             ERROR,
-                             _comp_output.message.value_or("Without message") + _comp_output.token->token_type.get_token_string_representation()
-                             );
+                            range_buffer.start = Position(_comp_output.line.value_or(0),_comp_output.char_pos.value_or(1));
+                            range_buffer.end = Position(_comp_output.line.value_or(0),_comp_output.char_pos.value_or(1) + token_length);
+
+                            if (_comp_output.token.has_value())
+                                message_buffer += _comp_output.token->token_type.get_token_string_representation();
+
+                            // report.items.emplace_back(
+                            //  Range{
+                            //      Position(_comp_output.line.value_or(0),_comp_output.char_pos.value_or(1)),
+                            //      Position(_comp_output.line.value_or(0),_comp_output.char_pos.value_or(1) + token_length),
+                            //  },
+                            //  ERROR,
+                            //  _comp_output.message.value_or("Without message") + _comp_output.token->token_type.get_token_string_representation()
+                            //  );
                         }
                         break;
                     }
@@ -260,16 +268,20 @@ namespace  lsp_test {
                             end -= whitespaces_count;
                         }
 
-                        std::string message = "Variable: " + var_name + " Undefined or non initialize";
+                        range_buffer.start = Position(_comp_output.line.value_or(0), start);
+                        range_buffer.end = Position(_comp_output.line.value_or(0), end);
 
-                        report.items.emplace_back(
-                        Range{
-                             Position(_comp_output.line.value_or(0),start),
-                             Position(_comp_output.line.value_or(0),end),
-                        },
-                        ERROR,
-                        message
-                        );
+                        message_buffer = "Variable: " + var_name + " Undefined or non initialize";
+                        // std::string message = "Variable: " + var_name + " Undefined or non initialize";
+
+                        // report.items.emplace_back(
+                        // Range{
+                        //      Position(_comp_output.line.value_or(0),start),
+                        //      Position(_comp_output.line.value_or(0),end),
+                        // },
+                        // ERROR,
+                        // message
+                        // );
                         break;
                         }
                     case ER_FUNC_RETURN:
@@ -285,16 +297,22 @@ namespace  lsp_test {
                     case ER_PARAMS_TYPE_MISMATCH:
                         break;
                     case ER_INTERNAL:
-                        report.items.emplace_back(
-                            Range{
-                                Position(0,0),
-                                Position(lines.capacity(),lines.end()->capacity())
-                            },
-                            ERROR,
-                            _comp_output.message.value_or("Without message")
-                            );
+                        range_buffer.start = Position(0,0);
+                        range_buffer.end = Position(lines.capacity(),lines.end()->capacity());
+                        // report.items.emplace_back(
+                        //     Range{
+                        //         Position(0,0),
+                        //         Position(lines.capacity(),lines.end()->capacity())
+                        //     },
+                        //     ERROR,
+                        //     _comp_output.message.value_or("Without message")
+                        //     );
                         break;
                 }
+                report.items.emplace_back(
+                    range_buffer,
+                    ERROR,
+                    message_buffer);
             }
         }
 
