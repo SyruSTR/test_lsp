@@ -215,6 +215,10 @@ namespace  lsp_test {
                     case ER_NONE:
                         break;
                     case ER_LEX:
+                        message_buffer = _comp_output.message.value_or("Without message: ");
+                        range_buffer.start = Position(_comp_output.line.value_or(1),_comp_output.char_pos.value_or(1));
+                        range_buffer.end = range_buffer.start;
+                        range_buffer.end.character++;
                         break;
                     case ER_SYNTAX: {
                         if (_comp_output.token.has_value()) {
