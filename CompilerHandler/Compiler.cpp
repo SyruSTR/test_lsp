@@ -19,7 +19,7 @@ Compiler::Compiler(const std::string &compiler_log_path){
 
     std::filesystem::path current_dir = std::filesystem::current_path();
     current_dir = current_dir.parent_path();
-    this->compiler_path = current_dir / "external" / "IFJ23-compiler" / "compiler";
+    this->compiler_path = current_dir / "IFJ23-compiler" / "compiler";
 }
 
 Compiler::~Compiler() {

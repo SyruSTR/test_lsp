@@ -17,7 +17,7 @@ public:
 private:
     std::ofstream compiler_log;
     std::string compiler_log_path;
-    std::string compiler_path = "/home/grusted/CLionProjects/-test_lsp/external/IFJ23-compiler/compiler";
+    std::string compiler_path;
 };
 
 
