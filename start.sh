@@ -5,6 +5,7 @@ set -e
 PROJECT_DIR="$(pwd)"
 BUILD_DIR="$PROJECT_DIR/tmp-cmake-build-release"
 EXT_DIR="$PROJECT_DIR/external/VSCode-extension-base"
+COMPILER_DIR="$PROJECT_DIR/external/IFJ23-compiler"
 CLIENT_DIR="$EXT_DIR/client"
 
 CMAKE_FLAGS=""
@@ -18,6 +19,9 @@ cd "$BUILD_DIR"
 
 cmake $CMAKE_FLAGS ..
 make
+
+cd "$COMPILER_DIR"
+make compiler
 
 cd "$EXT_DIR"
 
