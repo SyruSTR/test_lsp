@@ -247,12 +247,12 @@ namespace  lsp_test {
                         case ER_PARAMS:
                             break;
                         case ER_UNDEF_VAR_OR_NOTINIT_VAR:
-                            {
+                        {
                             std::string var_name = _comp_output.variable_name.value();
                             int var_length = var_name.length();
 
-                        // std::vector<std::string> lines = resplit(content.value(),std::regex("\n"));
-                        // auto current_line = lines.begin()+_comp_output.line.value();
+                            // std::vector<std::string> lines = resplit(content.value(),std::regex("\n"));
+                            // auto current_line = lines.begin()+_comp_output.line.value();
 
                             int start = 0;
                             int end = 0;
@@ -279,69 +279,46 @@ namespace  lsp_test {
                             message_buffer = "Variable: " + var_name + " Undefined or non initialize";
                             // std::string message = "Variable: " + var_name + " Undefined or non initialize";
 
-                        // report.items.emplace_back(
-                        // Range{
-                        //      Position(_comp_output.line.value_or(0),start),
-                        //      Position(_comp_output.line.value_or(0),end),
-                        // },
-                        // ERROR,
-                        // message
-                        // );
-                        break;
-                        }
-                    case ER_FUNC_RETURN:
-                        break;
-                    case ER_TYPE_COMP:
-                        break;
-                    case ER_INFERENCE:
-                        break;
-                    case ER_OTHER_SEM:
-                        break;
-                    case ER_PARAMS_ARGS_MISMATCH:
-                        break;
-                    case ER_PARAMS_TYPE_MISMATCH:
-                        break;
-                    case ER_INTERNAL:
-                        range_buffer.start = Position(0,0);
-                        range_buffer.end = Position(lines.capacity(),lines.end()->capacity());
-                        // report.items.emplace_back(
-                        //     Range{
-                        //         Position(0,0),
-                        //         Position(lines.capacity(),lines.end()->capacity())
-                        //     },
-                        //     ERROR,
-                        //     _comp_output.message.value_or("Without message")
-                        //     );
-                        break;
-                }
-                report.items.emplace_back(
-                    range_buffer,
-                    ERROR,
-                    message_buffer);
+                            // report.items.emplace_back(
+                            // Range{
+                            //      Position(_comp_output.line.value_or(0),start),
+                            //      Position(_comp_output.line.value_or(0),end),
+                            // },
+                            // ERROR,
+                            // message
+                            // );
                             break;
-                            }
+                        }
                         case ER_FUNC_RETURN:
                             break;
                         case ER_TYPE_COMP:
                             break;
-                        case ER_INFERENCE: {
-                            auto first_whitespace = current_line->rfind(" ",0,current_line->length());
-                            report.items.emplace_back(
-                            Range{
-                                Position(_comp_output.line.value_or(0),_comp_output.char_pos.value_or(1)-first_whitespace),
-                                Position(_comp_output.line.value_or(0),_comp_output.char_pos.value_or(1)),
-                            },
-                            ERROR,
-                            _comp_output.message.value_or("Without message") + _comp_output.token->token_type.get_token_string_representation()
-                            );
+                        case ER_INFERENCE:
                             break;
-                        }
                         case ER_OTHER_SEM:
                             break;
                         case ER_PARAMS_ARGS_MISMATCH:
                             break;
                         case ER_PARAMS_TYPE_MISMATCH:
                             break;
+                        case ER_INTERNAL:
+                            range_buffer.start = Position(0,0);
+                            range_buffer.end = Position(lines.capacity(),lines.end()->capacity());
+                            // report.items.emplace_back(
+                            //     Range{
+                            //         Position(0,0),
+                            //         Position(lines.capacity(),lines.end()->capacity())
+                            //     },
+                            //     ERROR,
+                            //     _comp_output.message.value_or("Without message")
+                            //     );
+                            break;
+                    }
+                    report.items.emplace_back(
+                        range_buffer,
+                        ERROR,
+                        message_buffer);
+                }
             }
             catch (json::parse_error& e) {
                 std::cerr << e.what() << std::endl;
