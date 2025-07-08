@@ -210,6 +210,7 @@ namespace  lsp_test {
                     Range range_buffer;
                     std::vector<std::string> lines = resplit(content.value(),std::regex("\n"));
                     __gnu_cxx::__normal_iterator<std::string *, std::vector<std::string>> current_line;
+
                     if (_comp_output.line.has_value())
                         current_line = lines.begin()+_comp_output.line.value();
                     switch (_comp_output.error_code) {
@@ -242,8 +243,25 @@ namespace  lsp_test {
                             }
                             break;
                         }
-                        case ER_UNDEF_FUNC_OR_REDEF_VAR:
+                        case ER_UNDEF_FUNC_OR_REDEF_VAR: {
+                            std::string id_name = _comp_output.token_content.value_or("");
+                            int start = 0;
+                            int end = 0;
+                            // if wanted call function, but it's variable
+                            if (_comp_output.token.value().token_type.type == T_BRACKET_OPEN) {
+                                start = current_line->find(id_name);
+                            }
+                            else {
+                                start = _comp_output.char_pos.value_or(1);
+                            }
+                            end = start + id_name.length();
+
+                            range_buffer.start = Position(_comp_output.line.value_or(0), start);
+                            range_buffer.end = Position(_comp_output.line.value_or(0), end);
+
+                            message_buffer = "redefinition of variable: '" + id_name + "'";
                             break;
+                        }
                         case ER_PARAMS:
                             break;
                         case ER_UNDEF_VAR_OR_NOTINIT_VAR:
