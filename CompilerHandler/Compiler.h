@@ -10,7 +10,7 @@
 
 class Compiler {
 public:
-    Compiler(const std::string &compiler_log_path);
+    explicit Compiler(const std::string &compiler_log_path);
     ~Compiler();
 
     std::string run(const std::string &file_content, bool debug = false) const;

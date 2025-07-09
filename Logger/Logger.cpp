@@ -3,6 +3,7 @@
 //
 
 #include "Logger.h"
+#include <iostream>
 
 Logger::Logger(const std::string& filename) {
     logFile = std::ofstream(filename);

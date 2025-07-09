@@ -7,7 +7,6 @@
 
 #include "Message.h"
 #include "methods/InitializeResult.h"
-#include "methods/ServerInfo.h"
 
 namespace lsp_test {
 

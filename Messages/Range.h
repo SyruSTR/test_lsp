@@ -19,7 +19,7 @@ namespace lsp_test {
         Range() { start = Position(0, 0); end = Position(0, 0); }
     };
 
-    void to_json(nlohmann::json& j, const Range& r) {
+    inline void to_json(nlohmann::json& j, const Range& r) {
         j["end"] = r.end;
         j["start"] = r.start;
     }

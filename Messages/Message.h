@@ -5,6 +5,7 @@
 #ifndef MESSAGE_H
 #define MESSAGE_H
 #include <string>
+#include <utility>
 #include "../external/json.hpp"
 
 namespace lsp_test {
@@ -13,7 +14,7 @@ namespace lsp_test {
     struct Message {
         std::string jsonrpc;
 
-        Message(const std::string &jsonrpc) : jsonrpc(jsonrpc) {}
+        explicit Message(std::string jsonrpc) : jsonrpc(std::move(jsonrpc)) {}
         Message() {
             this->jsonrpc = "2.0";
         }

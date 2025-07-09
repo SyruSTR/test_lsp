@@ -7,7 +7,7 @@
 #include <cstring>
 #include <iostream>
 #include <sys/wait.h>
-#include <stdio.h>
+#include <cstdio>
 #include <unistd.h>
 #include <fcntl.h>
 #include <filesystem>
@@ -22,9 +22,7 @@ Compiler::Compiler(const std::string &compiler_log_path){
     this->compiler_path = current_dir / "IFJ23-compiler" / "compiler";
 }
 
-Compiler::~Compiler() {
-
-}
+Compiler::~Compiler() = default;
 
 
 std::string Compiler::run(const std::string &file_content, bool debug) const {
@@ -87,7 +85,7 @@ std::string Compiler::run(const std::string &file_content, bool debug) const {
 
     // Read from child stderr
     std::string full_stderr;
-    const int bufferSize = 512;
+    constexpr int bufferSize = 512;
     std::string test_str_buff(bufferSize,'\0');
     ssize_t bytesRead;
     while ((bytesRead = read(pipe_stderr[0], &test_str_buff[0], test_str_buff.capacity() - 1)) > 0) {

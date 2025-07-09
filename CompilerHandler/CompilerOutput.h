@@ -99,7 +99,7 @@ namespace lsp_test {
          *
          * @return length of token, if can resolve from token_type, otherwise it will return 0
          */
-        int get_token_length() const {
+        int64_t get_token_length() const {
             switch (this->type) {
                 case T_UNDERLINE:
                 case T_ASSIGMENT:
@@ -203,14 +203,14 @@ namespace lsp_test {
     }
 
     struct CompilerOutput : ErrorBase {
-        std::optional<int> line;
-        std::optional<int> char_pos;
+        std::optional<int64_t> line;
+        std::optional<int64_t> char_pos;
         std::optional<TokenInfo> token;
         std::optional<TokenType> verified_token_type;
         std::optional<std::string> token_content;
         std::optional<std::string> function_name;
-        std::optional<int> expected_func_args;
-        std::optional<int> actual_func_args;
+        std::optional<int64_t> expected_func_args;
+        std::optional<int64_t> actual_func_args;
         std::optional<ItemType> expected_param_type;
         std::optional<ItemType> actual_param_type;
         std::optional<ItemType> expected_type;
@@ -223,18 +223,18 @@ namespace lsp_test {
     inline void from_json(const json& j, CompilerOutput& output) {
         from_json(j, static_cast<ErrorBase &>(output));
         if (j.contains("line")) {
-            output.line = j.at("line").get<int>() - 1;
+            output.line = j.at("line").get<int64_t>() - 1;
         }
         if (j.contains("char_pos")) {
-            output.char_pos = j.at("char_pos").get<int>() - 1;
+            output.char_pos = j.at("char_pos").get<int64_t>() - 1;
         }
         if (j.contains("token_type") && j.contains("token_string"))
             output.token = TokenInfo{j.at("token_type"), j.at("token_string")};
         if (j.contains("verified_token_type")) output.verified_token_type = j.at("verified_token_type").get<TokenType>();
         if (j.contains("token_string")) output.token_content = j.at("token_string").get<std::string>();
         if (j.contains("function_name")) output.function_name = j.at("function_name").get<std::string>();
-        if (j.contains("expected_func_args")) output.expected_func_args = j.at("expected_func_args").get<int>();
-        if (j.contains("actual_func_args")) output.actual_func_args = j.at("actual_func_args").get<int>();
+        if (j.contains("expected_func_args")) output.expected_func_args = j.at("expected_func_args").get<int64_t>();
+        if (j.contains("actual_func_args")) output.actual_func_args = j.at("actual_func_args").get<int64_t>();
         if (j.contains("expected_param_type")) output.expected_param_type = j.at("expected_param_type").get<ItemType>();
         if (j.contains("actual_param_type")) output.actual_param_type = j.at("actual_param_type").get<ItemType>();
         if (j.contains("expected_type")) output.expected_type = j.at("expected_type").get<ItemType>();

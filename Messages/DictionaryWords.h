@@ -5,8 +5,6 @@
 #ifndef DICTIONARYWORDS_H
 #define DICTIONARYWORDS_H
 #include <string>
-#include <unordered_set>
-#include "TextDocument/CompletionList.h"
 #include "TextDocument/CompletionList.h"
 
 

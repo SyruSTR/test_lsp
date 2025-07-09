@@ -5,7 +5,6 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include <iostream>
 #include <fstream>
 #include <string>
 #include <iomanip>

@@ -24,7 +24,7 @@
 
 namespace  lsp_test {
 
-    json get_message_without_params(int id) {
+    json get_message_without_params(int64_t id) {
         json j = Message();
         j["id"] = id;
         j["params"] = nullptr;
@@ -84,7 +84,7 @@ namespace  lsp_test {
     }
 
     void TextDocument::shutdown(const nlohmann::json& j) {
-        int id = 0;
+        int64_t id = 0;
         GET_VALUE_FROM_JSON(id,"id",j,typeof(id));
 
         //todo send error if request_method == 'exit'
@@ -96,8 +96,8 @@ namespace  lsp_test {
     }
 
     void TextDocument::completion(const nlohmann::json& j ) {
-        int id = 0;
-        GET_VALUE_FROM_JSON(id,"id",j,typeof(int));
+        int64_t id = 0;
+        GET_VALUE_FROM_JSON(id,"id",j,typeof(int64_t));
 
         //parse request from client
         auto request = RequestMessage<CompletionParams>(id,m_method,j["params"]);
@@ -114,7 +114,7 @@ namespace  lsp_test {
 
         std::istringstream f(content.value());
         std::string currentLine;
-        int i = 0;
+        int64_t i = 0;
         // get needed line for providing
         while (getline(f, *m_currentReadedLine, '\n')) {
             if (i == request.params->position.line)
@@ -149,8 +149,8 @@ namespace  lsp_test {
     }
 
     void TextDocument::diagnostic(const nlohmann::json& j) {
-        int id = 0;
-        GET_VALUE_FROM_JSON(id,"id",j,typeof(int));
+        int64_t id = 0;
+        GET_VALUE_FROM_JSON(id,"id",j,typeof(int64_t));
 
         auto request = RequestMessage<DocumentDiagnosticParams>(id,m_method,j["params"]);
 
@@ -224,7 +224,7 @@ namespace  lsp_test {
                             break;
                         case ER_SYNTAX: {
                             if (_comp_output.token.has_value()) {
-                                int token_length = _comp_output.token.value().token_type.get_token_length();
+                                int64_t token_length = _comp_output.token.value().token_type.get_token_length();
 
                                 range_buffer.start = Position(_comp_output.line.value_or(0),_comp_output.char_pos.value_or(1));
                                 range_buffer.end = Position(_comp_output.line.value_or(0),_comp_output.char_pos.value_or(1) + token_length);
@@ -245,8 +245,8 @@ namespace  lsp_test {
                         }
                         case ER_UNDEF_FUNC_OR_REDEF_VAR: {
                             std::string id_name = _comp_output.token_content.value_or("");
-                            int start = 0;
-                            int end = 0;
+                            int64_t start = 0;
+                            int64_t end = 0;
                             // if wanted call function, but it's variable
                             if (_comp_output.token.value().token_type.type == T_BRACKET_OPEN) {
                                 start = current_line->find(id_name);
@@ -267,22 +267,22 @@ namespace  lsp_test {
                         case ER_UNDEF_VAR_OR_NOTINIT_VAR:
                         {
                             std::string var_name = _comp_output.variable_name.value();
-                            int var_length = var_name.length();
+                            int64_t var_length = var_name.length();
 
                             // std::vector<std::string> lines = resplit(content.value(),std::regex("\n"));
                             // auto current_line = lines.begin()+_comp_output.line.value();
 
-                            int start = 0;
-                            int end = 0;
+                            int64_t start = 0;
+                            int64_t end = 0;
                             if (_comp_output.is_it_assigment.value()) {
                                 start = _comp_output.char_pos.value_or(1);
                                 end = start + var_length;
                             }
                             else {
-                                start = std::max(_comp_output.char_pos.value_or(1) - var_length, 0);
-                                end = std::min(_comp_output.char_pos.value_or(1),static_cast<int>(current_line->length()));
-                                int whitespaces_count = 0;
-                                for (auto it = current_line->begin() + static_cast<int>(current_line->find(var_name)); it != current_line->begin()+end; ++it ) {
+                                start = std::max(_comp_output.char_pos.value_or(1) - var_length,static_cast<int64_t>(0));
+                                end = std::min(_comp_output.char_pos.value_or(1),static_cast<int64_t>(current_line->length()));
+                                int64_t whitespaces_count = 0;
+                                for (auto it = current_line->begin() + static_cast<int64_t>(current_line->find(var_name)); it != current_line->begin()+end; ++it ) {
                                     if (std::isspace(*it)) {
                                         whitespaces_count++;
                                     }
@@ -424,7 +424,7 @@ namespace  lsp_test {
 
 
     void TextDocument::initialize_response(const nlohmann::json& j) {
-        int id = 0;
+        int64_t id = 0;
         GET_VALUE_FROM_JSON(id,"id",j,typeof(id));
 
         auto result = InitializerResult(
