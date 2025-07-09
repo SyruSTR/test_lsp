@@ -181,8 +181,7 @@ namespace  lsp_test {
             // json response_json = get_message_without_params(id);
             // sendResponse(response_json);
             try {
-                auto tmp_json = json::parse(tmp_str);
-                CompilerOutput _comp_output = tmp_json;
+                CompilerOutput _comp_output = json::parse(tmp_str);
 
      //            report.items.push_back({
      //     Diagnostic{
@@ -199,8 +198,8 @@ namespace  lsp_test {
                 if (_comp_output.message.has_value() && _comp_output.message.value() == "Unresolved error") {
                     report.items.emplace_back(
                              Range{
-                                 Position(_comp_output.line.value_or(1),_comp_output.char_pos.value_or(1)),
-                                 Position(_comp_output.line.value_or(1),_comp_output.char_pos.value_or(1)),
+                                 Position(_comp_output.location.value().line,_comp_output.location.value().char_pos),
+                                 Position(_comp_output.location.value().line,_comp_output.location.value().char_pos),
                              },
                              ERROR,
                              "Unresolved error"
@@ -211,26 +210,26 @@ namespace  lsp_test {
                     std::vector<std::string> lines = resplit(content.value(),std::regex("\n"));
                     __gnu_cxx::__normal_iterator<std::string *, std::vector<std::string>> current_line;
 
-                    if (_comp_output.line.has_value())
-                        current_line = lines.begin()+_comp_output.line.value();
+                    if (_comp_output.location.has_value())
+                        current_line = lines.begin()+_comp_output.location.value().line;
                     switch (_comp_output.error_code) {
                         case ER_NONE:
                             break;
                         case ER_LEX:
                             message_buffer = _comp_output.message.value_or("Without message: ");
-                            range_buffer.start = Position(_comp_output.line.value_or(1),_comp_output.char_pos.value_or(1));
+                            range_buffer.start = Position(_comp_output.location.value().line,_comp_output.location.value().char_pos);
                             range_buffer.end = range_buffer.start;
                             range_buffer.end.character++;
                             break;
                         case ER_SYNTAX: {
-                            if (_comp_output.token.has_value()) {
-                                int64_t token_length = _comp_output.token.value().token_type.get_token_length();
+                            if (_comp_output.token_error.has_value()) {
+                                int64_t token_length = _comp_output.token_error.value().token.get_token_length();
 
-                                range_buffer.start = Position(_comp_output.line.value_or(0),_comp_output.char_pos.value_or(1));
-                                range_buffer.end = Position(_comp_output.line.value_or(0),_comp_output.char_pos.value_or(1) + token_length);
+                                range_buffer.start = Position(_comp_output.location.value().line,_comp_output.location.value().char_pos);
+                                range_buffer.end = Position(_comp_output.location.value().line,_comp_output.location.value().char_pos + token_length);
 
-                                if (_comp_output.token.has_value())
-                                    message_buffer += _comp_output.token->token_type.get_token_string_representation();
+                                if (_comp_output.token_error.has_value())
+                                    message_buffer += to_string(_comp_output.token_error.value().token.type);
 
                                 // report.items.emplace_back(
                                 //  Range{
@@ -244,20 +243,20 @@ namespace  lsp_test {
                             break;
                         }
                         case ER_UNDEF_FUNC_OR_REDEF_VAR: {
-                            std::string id_name = _comp_output.token_content.value_or("");
+                            std::string id_name = _comp_output.token_error.value().token.token_string;
                             int64_t start = 0;
                             int64_t end = 0;
                             // if wanted call function, but it's variable
-                            if (_comp_output.token.value().token_type.type == T_BRACKET_OPEN) {
+                            if (_comp_output.token_error.value().token.type == T_BRACKET_OPEN) {
                                 start = current_line->find(id_name);
                             }
                             else {
-                                start = _comp_output.char_pos.value_or(1);
+                                start = _comp_output.location.value().char_pos;
                             }
                             end = start + id_name.length();
 
-                            range_buffer.start = Position(_comp_output.line.value_or(0), start);
-                            range_buffer.end = Position(_comp_output.line.value_or(0), end);
+                            range_buffer.start = Position(_comp_output.location.value().line, start);
+                            range_buffer.end = Position(_comp_output.location.value().line, end);
 
                             message_buffer = "redefinition of variable: '" + id_name + "'";
                             break;
@@ -266,7 +265,7 @@ namespace  lsp_test {
                             break;
                         case ER_UNDEF_VAR_OR_NOTINIT_VAR:
                         {
-                            std::string var_name = _comp_output.variable_name.value();
+                            std::string var_name = _comp_output.variable_info.value().variable_name;
                             int64_t var_length = var_name.length();
 
                             // std::vector<std::string> lines = resplit(content.value(),std::regex("\n"));
@@ -274,13 +273,13 @@ namespace  lsp_test {
 
                             int64_t start = 0;
                             int64_t end = 0;
-                            if (_comp_output.is_it_assigment.value()) {
-                                start = _comp_output.char_pos.value_or(1);
+                            if (_comp_output.variable_info.value().is_it_assigment) {
+                                start = _comp_output.location.value().char_pos;
                                 end = start + var_length;
                             }
                             else {
-                                start = std::max(_comp_output.char_pos.value_or(1) - var_length,static_cast<int64_t>(0));
-                                end = std::min(_comp_output.char_pos.value_or(1),static_cast<int64_t>(current_line->length()));
+                                start = std::max(_comp_output.location.value().char_pos - var_length,static_cast<int64_t>(0));
+                                end = std::min(_comp_output.location.value().char_pos, static_cast<int64_t>(current_line->length()));
                                 int64_t whitespaces_count = 0;
                                 for (auto it = current_line->begin() + static_cast<int64_t>(current_line->find(var_name)); it != current_line->begin()+end; ++it ) {
                                     if (std::isspace(*it)) {
@@ -291,8 +290,8 @@ namespace  lsp_test {
                                 end -= whitespaces_count;
                             }
 
-                            range_buffer.start = Position(_comp_output.line.value_or(0), start);
-                            range_buffer.end = Position(_comp_output.line.value_or(0), end);
+                            range_buffer.start = Position(_comp_output.location.value().line, start);
+                            range_buffer.end = Position(_comp_output.location.value().line, end);
 
                             message_buffer = "Variable: " + var_name + " Undefined or non initialize";
                             // std::string message = "Variable: " + var_name + " Undefined or non initialize";
@@ -321,7 +320,7 @@ namespace  lsp_test {
                             break;
                         case ER_INTERNAL:
                             range_buffer.start = Position(0,0);
-                            range_buffer.end = Position(lines.capacity(),lines.end()->capacity());
+                            range_buffer.end = Position(lines.capacity(),lines.end()->length());
                             // report.items.emplace_back(
                             //     Range{
                             //         Position(0,0),
