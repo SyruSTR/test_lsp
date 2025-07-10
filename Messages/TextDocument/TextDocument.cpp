@@ -259,6 +259,7 @@ namespace  lsp_test {
                             message_buffer = "redefinition of variable: '" + id_name + "'";
                             break;
                         }
+                        case ER_PARAMS_ARGS_MISMATCH:
                         case ER_PARAMS_TYPE_MISMATCH: {
                             //get func call brackets positions for highlighting
                             int64_t start = current_line->find('(');
@@ -273,19 +274,27 @@ namespace  lsp_test {
                             range_buffer.start = Position(_comp_output.location.value().line, start);
                             range_buffer.end = Position(_comp_output.location.value().line, end);
 
-                            if (_comp_output.func_type_mismatch.has_value()) {
-                                auto is_nil_possibility_string = [](ItemType const type ,bool const is_nil_possibility) {
-                                    return is_nil_possibility && type != IT_NIL  ? "?" : "";
-                                };
-                                message_buffer = "function '" + _comp_output.func_type_mismatch.value().func.name + "' expect type '"
-                                                            + to_string(_comp_output.func_type_mismatch.value().types.expected_type)
-                                + is_nil_possibility_string(_comp_output.func_type_mismatch.value().types.expected_type,
-                                    _comp_output.func_type_mismatch.value().expected_is_nil_possibility)
-                                + "' but has got '"
-                                                            + to_string(_comp_output.func_type_mismatch.value().types.actual_type)
-                                + is_nil_possibility_string(_comp_output.func_type_mismatch.value().types.actual_type,
-                                    _comp_output.func_type_mismatch.value().actual_is_nil_possibility) + "'";
+                            if (_comp_output.error_code == ER_PARAMS_TYPE_MISMATCH) {
+                                if (_comp_output.func_type_mismatch.has_value()) {
+                                    auto is_nil_possibility_string = [](ItemType const type ,bool const is_nil_possibility) {
+                                        return is_nil_possibility && type != IT_NIL  ? "?" : "";
+                                    };
+                                    message_buffer = "function '" + _comp_output.func_type_mismatch.value().func.name + "' expect type '"
+                                                                + to_string(_comp_output.func_type_mismatch.value().types.expected_type)
+                                    + is_nil_possibility_string(_comp_output.func_type_mismatch.value().types.expected_type,
+                                        _comp_output.func_type_mismatch.value().expected_is_nil_possibility)
+                                    + "' but has got '"
+                                                                + to_string(_comp_output.func_type_mismatch.value().types.actual_type)
+                                    + is_nil_possibility_string(_comp_output.func_type_mismatch.value().types.actual_type,
+                                        _comp_output.func_type_mismatch.value().actual_is_nil_possibility) + "'";
+                                }
                             }
+                            else {
+                                if (_comp_output.argument_mismatch.has_value()) {
+                                    message_buffer = "function has " + std::to_string(_comp_output.argument_mismatch.value().expected_func_args) + " parameters"
+                                                                + ", but is called with " + std::to_string(_comp_output.argument_mismatch.value().actual_func_args) + " argument"
+                                                                + (_comp_output.argument_mismatch.value().actual_func_args > 1 ? "s" : "");
+                                }
                             }
                             break;
                         }
@@ -339,8 +348,6 @@ namespace  lsp_test {
                         case ER_INFERENCE:
                             break;
                         case ER_OTHER_SEM:
-                            break;
-                        case ER_PARAMS_ARGS_MISMATCH:
                             break;
                         case ER_INTERNAL:
                             range_buffer.start = Position(0,0);
