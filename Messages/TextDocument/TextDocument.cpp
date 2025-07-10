@@ -213,8 +213,6 @@ namespace  lsp_test {
                     if (_comp_output.location.has_value())
                         current_line = lines.begin()+_comp_output.location.value().line;
                     switch (_comp_output.error_code) {
-                        case ER_NONE:
-                            break;
                         case ER_LEX:
                             message_buffer = _comp_output.message.value_or("Without message: ");
                             range_buffer.start = Position(_comp_output.location.value().line,_comp_output.location.value().char_pos);
@@ -270,13 +268,24 @@ namespace  lsp_test {
                             if (end == -1)
                                 end = current_line->length();
 
+                            // it's necessary to add +1 to get correct highlighting
+                            end++;
                             range_buffer.start = Position(_comp_output.location.value().line, start);
                             range_buffer.end = Position(_comp_output.location.value().line, end);
 
                             if (_comp_output.func_type_mismatch.has_value()) {
+                                auto is_nil_possibility_string = [](ItemType const type ,bool const is_nil_possibility) {
+                                    return is_nil_possibility && type != IT_NIL  ? "?" : "";
+                                };
                                 message_buffer = "function '" + _comp_output.func_type_mismatch.value().func.name + "' expect type '"
-                                                            + to_string(_comp_output.func_type_mismatch.value().types.expected_type) + "' but has got '"
-                                                            + to_string(_comp_output.func_type_mismatch.value().types.actual_type) + "'";
+                                                            + to_string(_comp_output.func_type_mismatch.value().types.expected_type)
+                                + is_nil_possibility_string(_comp_output.func_type_mismatch.value().types.expected_type,
+                                    _comp_output.func_type_mismatch.value().expected_is_nil_possibility)
+                                + "' but has got '"
+                                                            + to_string(_comp_output.func_type_mismatch.value().types.actual_type)
+                                + is_nil_possibility_string(_comp_output.func_type_mismatch.value().types.actual_type,
+                                    _comp_output.func_type_mismatch.value().actual_is_nil_possibility) + "'";
+                            }
                             }
                             break;
                         }

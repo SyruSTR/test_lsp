@@ -267,11 +267,15 @@ namespace lsp_test {
     struct FunctionTypeMismatch {
         FunctionName func;
         TypeComparison types;
+        bool actual_is_nil_possibility;
+        bool expected_is_nil_possibility;
     };
 
     inline void from_json(const json& j, FunctionTypeMismatch& f) {
         from_json(j, f.func);
         from_json(j, f.types);
+        j.at("actual_is_nil_possibility").get_to(f.actual_is_nil_possibility);
+        j.at("expected_is_nil_possibility").get_to(f.expected_is_nil_possibility);
     }
 
     struct ArgumentMismatch {
