@@ -300,6 +300,14 @@ namespace lsp_test {
         j.at("is_it_assigment").get_to(v.is_it_assigment);
     }
 
+    struct ReturnInfo {
+        bool is_void_function;
+    };
+
+    inline void from_json(const json& j, ReturnInfo& r) {
+        j.at("is_void_function").get_to(r.is_void_function);
+    }
+
     struct CompilerOutput : ErrorBase {
         std::optional<SourceLocation> location;
         std::optional<TokenError> token_error; // for ER_SYNTAX
@@ -309,6 +317,7 @@ namespace lsp_test {
         std::optional<FunctionName> function_name; // for ER_INFERENCE
         std::optional<VariableInfo> variable_info; // for ER_UNDEF_VAR_OR_NOTINIT_VAR
         std::optional<TypeComparison> type_comparison; // for ER_TYPE_COMP
+        std::optional<ReturnInfo> return_info; // for ER_FUNC_RETURN
     };
 
     inline void from_json(const json& j, CompilerOutput& output) {
@@ -336,6 +345,10 @@ namespace lsp_test {
 
                 case ER_UNDEF_VAR_OR_NOTINIT_VAR:
                     output.variable_info = j.get<VariableInfo>();
+                    break;
+
+                case ER_FUNC_RETURN:
+                    output.return_info = j.get<ReturnInfo>();
                     break;
 
                 case ER_TYPE_COMP:

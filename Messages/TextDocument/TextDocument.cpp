@@ -341,8 +341,26 @@ namespace  lsp_test {
                             // );
                             break;
                         }
-                        case ER_FUNC_RETURN:
+                        case ER_FUNC_RETURN: {
+                            std::string str_return = "return";
+                            int64_t start = current_line->find(str_return);
+                            std::cerr << start << std::endl;
+                            if (start == -1)
+                                start = 0;
+                            int64_t end = start + str_return.length();
+
+                            range_buffer.start = Position(_comp_output.location->line,start);
+                            range_buffer.end = Position(_comp_output.location->line,end);
+
+                            if (_comp_output.return_info.has_value()) {
+                                if (_comp_output.return_info.value().is_void_function)
+                                    message_buffer = "A function with void return type shouldn't return a value";
+                                else
+                                    message_buffer = "A function with non-void return type should return a value";
+                            }
+
                             break;
+                        }
                         case ER_TYPE_COMP:
                             break;
                         case ER_INFERENCE:
