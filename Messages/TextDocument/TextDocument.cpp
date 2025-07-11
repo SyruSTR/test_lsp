@@ -221,6 +221,7 @@ namespace  lsp_test {
                             break;
                         case ER_SYNTAX: {
                             if (_comp_output.token_error.has_value()) {
+                                // todo calculate token_content length
                                 int64_t token_length = _comp_output.token_error.value().token.get_token_length();
 
                                 range_buffer.start = Position(_comp_output.location.value().line,_comp_output.location.value().char_pos);
