@@ -345,7 +345,6 @@ namespace  lsp_test {
                         case ER_FUNC_RETURN: {
                             std::string str_return = "return";
                             int64_t start = current_line->find(str_return);
-                            std::cerr << start << std::endl;
                             if (start == -1)
                                 start = 0;
                             int64_t end = start + str_return.length();
@@ -387,8 +386,11 @@ namespace  lsp_test {
                         message_buffer);
                 }
             }
-            catch (json::parse_error& e) {
+            catch ([[maybe_unused]] json::parse_error& e) {
+#ifdef DEBUG
                 std::cerr << e.what() << std::endl;
+#endif
+
             }
         }
 
@@ -439,8 +441,10 @@ namespace  lsp_test {
 
     void TextDocument::sendResponse(const nlohmann::json& response) {
         std::cout << "Content-Length: " << response.dump().length() << "\r\n\r\n" << response.dump();
+#ifdef DEBUG
         //debug message
         std::cerr << response.dump() << std::endl;
+#endif
         std::cout.flush();
     }
 
